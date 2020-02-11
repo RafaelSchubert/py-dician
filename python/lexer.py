@@ -1,13 +1,13 @@
 from enum import Enum, unique, auto
 
-@unique
-class TokenType(Enum):
-    SB_PLUS  = auto()
-    SB_MINUS = auto()
-    INTEGER  = auto()
-    DICE     = auto()
-
 class Token():
+    @unique
+    class Type(Enum):
+        SB_PLUS  = auto()
+        SB_MINUS = auto()
+        INTEGER  = auto()
+        DICE     = auto()
+
     def __init__(self, kind = None, value = None):
         self._kind  = kind
         self._value = value
