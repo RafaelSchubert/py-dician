@@ -1,0 +1,22 @@
+# Symbols
+plus  = "+"
+minus = "-"
+
+# Definitions
+integer_nz = [1-9] [0-9]*
+integer    = "0" | integer_nz
+
+dice = integer_nz? [dD] integer_nz
+
+# Grammar
+<roll_expression> ::= <sum_or_sub_seq>
+
+<sum_or_sub_seq>            ::= <value_expression> <sum_or_sub_seq_right_hand>
+<sum_or_sub_seq_right_hand> ::= <plus_or_minus> <sum_or_sub_seq>
+                              | &
+
+<value_expression> ::= integer
+                     | dice
+
+<plus_or_minus> ::= plus
+                 | minus
