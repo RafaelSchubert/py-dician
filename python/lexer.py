@@ -8,7 +8,7 @@ class TokenType(Enum):
     DICE     = auto()
 
 class Token():
-    def __init__(self, kind, value):
+    def __init__(self, kind = None, value = None):
         self._kind  = kind
         self._value = value
 
@@ -18,33 +18,80 @@ class Token():
     def value(self):
         return self._value
 
-# class Tokenizer():
-#     def __init__(self, text):
-#         self.text = text
-#         self.symbol_index = 0
-#         self.token_start = 0
+class Tokenizer():
+    @unique
+    class State(Enum):
+        SEEKING_NEXT    = auto()
+        ENDED           = auto()
+        FOUND_DIGIT_NZ  = auto()
+        READING_PLUS    = auto()
+        READING_MINUS   = auto()
+        READING_INTEGER = auto()
+        READING_DICE    = auto()
 
-#     def _has_symbols_left(self):
-#         return self.symbol_index < len(self.text)
+    def __init__(self, text = ''):
+        self.parse(text)
 
-#     def _read_symbol(self):
-#         if self._has_symbols_left():
-#             symbol = self.text[self.symbol_index]
-#             self.symbol_index += 1
-#             return symbol
-#         return None
+    def parse(self, text):
+        self._text          = text
+        self._state         = Tokenizer.State.SEEKING_NEXT
+        self._current_index = 0
+        self._token_start   = 0
+
+    def fetch(self):
+        while self._state != Tokenizer.State.ENDED:
+            if self._state == Tokenizer.State.SEEKING_NEXT:
+                self._seeknext()
+            elif self._state == Tokenizer.State.READING_PLUS:
+                pass
+            elif self._state == Tokenizer.State.READING_MINUS:
+                pass
+        return Token()
+
+    def _seeknext(self):
+        self._skipblanks()
+        current = self._peek()
+        if current == None:
+            self._state = Tokenizer.State.ENDED
+        elif current == '+'
+            self._state = Tokenizer.State.READING_PLUS
+        elif current == '-':
+            self._state = Tokenizer.State.READING_MINUS
+        elif current == '0':
+            self._state = Tokenizer.State.READING_INTEGER
+        elif current.casefold() == 'd':
+            self._state = Tokenizer.State.READING_DICE
+        elif current.isdigit():
+            self._state = Tokenizer.State.FOUND_DIGIT_NZ
+        else:
+            self._state = Tokenizer.State.ENDED
+
+    def _getplus(self):
+        pass
+
+    def _getminus(self):
+        pass
+
+    def _hassymbolsleft(self):
+        return self._current_index < len(self._text) and self._state != Tokenizer.State.ENDED
     
-#     def _peek_symbol(self):
-#         if self._has_symbols_left():
-#             return self.text[self.symbol_index]
-#         return None
+    def _peek(self):
+        if self._hassymbolsleft():
+            return self._text[self._current_index]
+        return None
 
-#     def _skip_blanks(self):
-#         while self._has_symbols_left():
-#             if self._peek_symbol().isspace():
-#                 self.symbol_index += 1
-#             else:
-#                 break
+    def _read(self):
+        symbol = self._peek()
+        if symbol != None:
+            self._current_index += 1
+        return symbol
+
+    def _skipblanks(self):
+        while self._hassymbolsleft():
+            if self._peek().isspace():
+                self._current_index += 1
+            else:
+                break
 
 #     def _skip_digits(self):
 #         while self._has_symbols_left():
