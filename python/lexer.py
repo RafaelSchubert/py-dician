@@ -22,7 +22,7 @@ class Tokenizer():
     @unique
     class State(Enum):
         SEEKING_NEXT    = auto()
-        ENDED           = auto()
+        FINISHED        = auto()
         FOUND_DIGIT_NZ  = auto()
         READING_PLUS    = auto()
         READING_MINUS   = auto()
@@ -39,7 +39,7 @@ class Tokenizer():
         self._token_start   = 0
 
     def fetch(self):
-        while self._state != Tokenizer.State.ENDED:
+        while self._state != Tokenizer.State.FINISHED:
             if self._state == Tokenizer.State.SEEKING_NEXT:
                 self._seeknext()
             elif self._state == Tokenizer.State.READING_PLUS:
@@ -52,7 +52,7 @@ class Tokenizer():
         self._skipblanks()
         current = self._peek()
         if current == None:
-            self._state = Tokenizer.State.ENDED
+            self._state = Tokenizer.State.FINISHED
         elif current == '+'
             self._state = Tokenizer.State.READING_PLUS
         elif current == '-':
@@ -64,7 +64,7 @@ class Tokenizer():
         elif current.isdigit():
             self._state = Tokenizer.State.FOUND_DIGIT_NZ
         else:
-            self._state = Tokenizer.State.ENDED
+            self._state = Tokenizer.State.FINISHED
 
     def _getplus(self):
         pass
@@ -73,7 +73,7 @@ class Tokenizer():
         pass
 
     def _hassymbolsleft(self):
-        return self._current_index < len(self._text) and self._state != Tokenizer.State.ENDED
+        return self._current_index < len(self._text) and self._state != Tokenizer.State.FINISHED
     
     def _peek(self):
         if self._hassymbolsleft():
