@@ -37,14 +37,14 @@ class Tokenizer():
             if self._state == Tokenizer.State.SEEKING_NEXT:
                 self._seeknext()
             elif self._state == Tokenizer.State.READING_PLUS:
-                pass
+                return self._getplus()
             elif self._state == Tokenizer.State.READING_MINUS:
-                pass
+                return self._getminus()
         return Token()
 
     def _seeknext(self):
         self._skipblanks()
-        current = self._peek()
+        current = self._read()
         if current == None:
             self._state = Tokenizer.State.FINISHED
         elif current == '+'
@@ -61,10 +61,10 @@ class Tokenizer():
             self._state = Tokenizer.State.FINISHED
 
     def _getplus(self):
-        pass
+        return self._extracttoken(Token.Type.SB_PLUS)
 
     def _getminus(self):
-        pass
+        return self._extracttoken(Token.Type.SB_MINUS)
 
     def _hassymbolsleft(self):
         return self._current_index < len(self._text) and self._state != Tokenizer.State.FINISHED
@@ -86,6 +86,12 @@ class Tokenizer():
                 self._current_index += 1
             else:
                 break
+
+    def _extracttoken(self, kind):
+        token = Token(kind, self._text[self._token_start:self._current_index])
+        self._token_start = self._current_index
+        self._state       = Tokenizer.State.SEEKING_NEXT
+        return token
 
 #     def _skip_digits(self):
 #         while self._has_symbols_left():
