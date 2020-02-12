@@ -9,14 +9,8 @@ class Token():
         DICE     = auto()
 
     def __init__(self, kind = None, value = None):
-        self._kind  = kind
-        self._value = value
-
-    def kind(self):
-        return self._kind
-
-    def value(self):
-        return self._value
+        self.kind  = kind
+        self.value = value
 
 class Tokenizer():
     @unique
