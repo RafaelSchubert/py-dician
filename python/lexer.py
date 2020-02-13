@@ -13,58 +13,29 @@ class Token():
         self.value = value
 
 class Tokenizer():
-    @unique
-    class State(Enum):
-        SEEKING_NEXT    = auto()
-        FINISHED        = auto()
-        FOUND_DIGIT_NZ  = auto()
-        READING_PLUS    = auto()
-        READING_MINUS   = auto()
-        READING_INTEGER = auto()
-        READING_DICE    = auto()
-
     def __init__(self, text = ''):
         self.parse(text)
 
     def parse(self, text):
         self._text          = text
-        self._state         = Tokenizer.State.SEEKING_NEXT
         self._current_index = 0
         self._token_start   = 0
 
     def fetch(self):
-        while self._state != Tokenizer.State.FINISHED:
-            if self._state == Tokenizer.State.SEEKING_NEXT:
-                self._seeknext()
-            elif self._state == Tokenizer.State.READING_PLUS:
-                return self._getplus()
-            elif self._state == Tokenizer.State.READING_MINUS:
-                return self._getminus()
-        return Token()
-
-    def _seeknext(self):
         self._skipblanks()
         current = self._read()
-        if current == None:
-            self._state = Tokenizer.State.FINISHED
-        elif current == '+'
-            self._state = Tokenizer.State.READING_PLUS
-        elif current == '-':
-            self._state = Tokenizer.State.READING_MINUS
-        elif current == '0':
-            self._state = Tokenizer.State.READING_INTEGER
-        elif current.casefold() == 'd':
-            self._state = Tokenizer.State.READING_DICE
-        elif current.isdigit():
-            self._state = Tokenizer.State.FOUND_DIGIT_NZ
-        else:
-            self._state = Tokenizer.State.FINISHED
-
-    def _getplus(self):
-        return self._extracttoken(Token.Type.SB_PLUS)
-
-    def _getminus(self):
-        return self._extracttoken(Token.Type.SB_MINUS)
+        if current != None:
+            if current == '+':
+                return self._extracttoken(Token.Type.SB_PLUS)
+            if current == '-':
+                return self._extracttoken(Token.Type.SB_MINUS)
+            if current == '0':
+                return self._extracttoken(Token.Type.INTEGER, 0)
+            if current.casefold() == 'd':
+                pass
+            if current.isdigit():
+                pass
+        return Token()
 
     def _hassymbolsleft(self):
         return self._current_index < len(self._text) and self._state != Tokenizer.State.FINISHED
@@ -87,18 +58,17 @@ class Tokenizer():
             else:
                 break
 
-    def _extracttoken(self, kind):
-        token = Token(kind, self._text[self._token_start:self._current_index])
-        self._token_start = self._current_index
-        self._state       = Tokenizer.State.SEEKING_NEXT
-        return token
+    # def _skip_digits(self):
+    #     while self._has_symbols_left():
+    #         if self._peek_symbol().isdigit():
+    #             self.symbol_index += 1
+    #         else:
+    #             break
 
-#     def _skip_digits(self):
-#         while self._has_symbols_left():
-#             if self._peek_symbol().isdigit():
-#                 self.symbol_index += 1
-#             else:
-#                 break
+    def _extracttoken(self, kind, value = None):
+        token = Token(kind, value)
+        self._token_start = self._current_index
+        return token
 
 #     def _start_token(self):
 #         self.token_start = self.symbol_index
