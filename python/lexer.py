@@ -26,15 +26,18 @@ class Tokenizer():
         current = self._read()
         if current != None:
             if current == '+':
-                return self._extracttoken(Token.Type.SB_PLUS)
+                return self._getplus()
             if current == '-':
-                return self._extracttoken(Token.Type.SB_MINUS)
+                return self._getminus()
             if current == '0':
-                return self._extracttoken(Token.Type.INTEGER, 0)
+                return self._getinteger()
             if current.casefold() == 'd':
                 pass
             if current.isdigit():
-                pass
+                self._skip_digits()
+                if self._peek() == 'd':
+                    pass
+                return self._getinteger()
         return Token()
 
     def _hassymbolsleft(self):
@@ -58,45 +61,26 @@ class Tokenizer():
             else:
                 break
 
-    # def _skip_digits(self):
-    #     while self._has_symbols_left():
-    #         if self._peek_symbol().isdigit():
-    #             self.symbol_index += 1
-    #         else:
-    #             break
+    def _skip_digits(self):
+        while self._hassymbolsleft():
+            if self._peek().isdigit():
+                self._current_index += 1
+            else:
+                break
+
+    def _tokenstring(self):
+        return self._text[self._token_start:self._current_index]
 
     def _extracttoken(self, kind, value = None):
         token = Token(kind, value)
         self._token_start = self._current_index
         return token
 
-#     def _start_token(self):
-#         self.token_start = self.symbol_index
+    def _getplus(self):
+        return self._extracttoken(Token.Type.SB_PLUS)
 
-#     def _token_string(self):
-#         return self.text[self.token_start:self.symbol_index]
+    def _getminus(self):
+        return self._extracttoken(Token.Type.SB_MINUS)
 
-#     def _fetch_token(self, tk_type):
-#         token = (tk_type, (self.token_start, self.symbol_index), self._token_string())
-#         self._start_token()
-#         return token
-
-#     def next(self):
-#         self._skip_blanks()
-#         self._start_token()
-#         current = self._read_symbol()
-#         if not current is None:
-#             if current.casefold() == 'd':
-#                 return self._fetch_token(Tokens.KeyWord_d)
-#             if current == '+':
-#                 return self._fetch_token(Tokens.Symbol_Plus)
-#             if current == '-':
-#                 return self._fetch_token(Tokens.Symbol_Minus)
-#             if current == '(':
-#                 return self._fetch_token(Tokens.Symbol_ParenthesisLeft)
-#             if current == ')':
-#                 return self._fetch_token(Tokens.Symbol_ParenthesisRight)
-#             if current.isdigit():
-#                 self._skip_digits()
-#                 return self._fetch_token(Tokens.Literal_Integer)
-#         return None
+    def _getinteger(self):
+        return self._extracttoken(Token.Type.INTEGER, int(self._tokenstring()))
