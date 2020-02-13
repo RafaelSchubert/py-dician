@@ -1,21 +1,22 @@
 # Definitions
-plus  = "+"
-minus = "-"
+plus     = "+"
+minus    = "-"
+dice_tag = [dD]
 
-integer_nz = [1-9] [0-9]*
-integer    = "0" | integer_nz
-
-dice = integer_nz? [dD] integer_nz
+integer = ("0" | [1-9] [0-9]*)
 
 # Grammar
-<roll_expression> ::= <sum_or_sub_seq>
+<roll_expression> ::= <sum_or_sub_sequence>
 
-<sum_or_sub_seq>            ::= <value_expression> <sum_or_sub_seq_right_hand>
-<sum_or_sub_seq_right_hand> ::= <plus_or_minus> <sum_or_sub_seq>
-                              | &
+<sum_or_sub_sequence>            ::= <dice_combo> <sum_or_sub_sequence_right_hand>
+<sum_or_sub_sequence_right_hand> ::= <plus_or_minus> <sum_or_sub_sequence>
+                                   | &
 
-<value_expression> ::= integer
-                     | dice
+<dice_combo> ::= integer <dice_expression_optional>
+
+<dice_expression_optional> ::= <dice_expression>
+                             | &
+<dice_expression>          ::= dice_tag integer
 
 <plus_or_minus> ::= plus
-                 | minus
+                  | minus
