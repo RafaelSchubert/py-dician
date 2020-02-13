@@ -24,33 +24,41 @@ class Tokenizer():
     def fetch(self):
         self._skipblanks()
         current = self._read()
-        if current != None:
-            if current == '+':
-                return self._getplus()
-            if current == '-':
-                return self._getminus()
-            if current == '0':
-                return self._getinteger()
-            if current.casefold() == 'd':
-                pass
-            if current.isdigit():
+        if current == '+':
+            return self._getplus()
+        if current == '-':
+            return self._getminus()
+        if current == '0':
+            return self._getinteger()
+        if current.casefold() == 'd':
+            return self._readdice()
+        if current.isdigit():
+            self._skip_digits()
+            if self._peek() == 'd':
+                self._read()
+                return self._readdice()
+            return self._getinteger()
+        return None
+
+    def _readdice(self):
+        current = self._peek()
+        if current.isdigit():
+            if current != '0':
                 self._skip_digits()
-                if self._peek() == 'd':
-                    pass
-                return self._getinteger()
-        return Token()
+                return self._getdice()
+        return None
 
     def _hassymbolsleft(self):
-        return self._current_index < len(self._text) and self._state != Tokenizer.State.FINISHED
+        return self._current_index < len(self._text)
     
     def _peek(self):
         if self._hassymbolsleft():
             return self._text[self._current_index]
-        return None
+        return '\x00'
 
     def _read(self):
         symbol = self._peek()
-        if symbol != None:
+        if symbol != '\x00':
             self._current_index += 1
         return symbol
 
@@ -84,3 +92,13 @@ class Tokenizer():
 
     def _getinteger(self):
         return self._extracttoken(Token.Type.INTEGER, int(self._tokenstring()))
+
+    def _getdice(self):
+        return self._extracttoken(Token.Type.DICE, self._tokenstring())
+
+if __name__ == '__main__':
+    tkr = Tokenizer('d5d6')
+    token = tkr.fetch()
+    while token != None:
+        print(token.kind, token.value)
+        token = tkr.fetch()
