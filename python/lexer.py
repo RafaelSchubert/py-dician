@@ -1,7 +1,6 @@
-from enum import Enum, unique, auto
+from enum import Enum, auto
 
 class Token():
-    @unique
     class Type(Enum):
         SB_PLUS  = auto()
         SB_MINUS = auto()
@@ -28,24 +27,10 @@ class Tokenizer():
             return self._getplus()
         if current == '-':
             return self._getminus()
-        if current == '0':
-            return self._getinteger()
         if current.casefold() == 'd':
-            return self._readdice()
+            return self._getdice()
         if current.isdigit():
-            self._skip_digits()
-            if self._peek() == 'd':
-                self._read()
-                return self._readdice()
             return self._getinteger()
-        return None
-
-    def _readdice(self):
-        current = self._peek()
-        if current.isdigit():
-            if current != '0':
-                self._skip_digits()
-                return self._getdice()
         return None
 
     def _hassymbolsleft(self):
@@ -94,7 +79,7 @@ class Tokenizer():
         return self._extracttoken(Token.Type.INTEGER, int(self._tokenstring()))
 
     def _getdice(self):
-        return self._extracttoken(Token.Type.DICE, self._tokenstring())
+        return self._extracttoken(Token.Type.DICE)
 
 if __name__ == '__main__':
     tkr = Tokenizer('d5d6')
