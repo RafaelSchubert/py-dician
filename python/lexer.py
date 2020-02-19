@@ -5,7 +5,7 @@ class Token():
         SB_PLUS  = auto()
         SB_MINUS = auto()
         INTEGER  = auto()
-        DICE     = auto()
+        KW_D     = auto()
 
     def __init__(self, kind = None, value = None):
         self.kind  = kind
@@ -23,11 +23,11 @@ class Tokenizer():
     def fetch(self):
         self._skipblanks()
         current = self._read()
-        if current == '+':
+        if self._issymbolplus(current):
             return self._getplus()
-        if current == '-':
+        if self._issymbolminus(current):
             return self._getminus()
-        if current.casefold() == 'd':
+        if self._iskeywordd(current):
             return self._getdice()
         if current.isdigit():
             return self._getinteger()
@@ -79,7 +79,16 @@ class Tokenizer():
         return self._extracttoken(Token.Type.INTEGER, int(self._tokenstring()))
 
     def _getdice(self):
-        return self._extracttoken(Token.Type.DICE)
+        return self._extracttoken(Token.Type.KW_D)
+
+    def _issymbolplus(self, token):
+        return token == '+'
+
+    def _issymbolminus(self, token):
+        return token == '-'
+
+    def _iskeywordd(self, token):
+        return token.casefold() == 'd'
 
 if __name__ == '__main__':
     tkr = Tokenizer('d5d6')
