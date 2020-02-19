@@ -22,15 +22,21 @@ class Tokenizer():
 
     def fetch(self):
         self._skipblanks()
+
         current = self._read()
+
         if self._issymbolplus(current):
             return self._getplus()
+
         if self._issymbolminus(current):
             return self._getminus()
+
         if self._iskeywordd(current):
             return self._getdice()
+
         if current.isdigit():
             return self._getinteger()
+
         return None
 
     def _hassymbolsleft(self):
@@ -39,12 +45,15 @@ class Tokenizer():
     def _peek(self):
         if self._hassymbolsleft():
             return self._text[self._current_index]
+
         return '\x00'
 
     def _read(self):
         symbol = self._peek()
+
         if symbol != '\x00':
             self._current_index += 1
+            
         return symbol
 
     def _skipblanks(self):
@@ -66,7 +75,9 @@ class Tokenizer():
 
     def _extracttoken(self, kind, value = None):
         token = Token(kind, value)
+
         self._token_start = self._current_index
+
         return token
 
     def _getplus(self):
@@ -91,8 +102,10 @@ class Tokenizer():
         return token.casefold() == 'd'
 
 if __name__ == '__main__':
-    tkr = Tokenizer('d5d6')
+    tkr   = Tokenizer('d5d6')
     token = tkr.fetch()
+
     while token != None:
         print(token.kind, token.value)
+
         token = tkr.fetch()
