@@ -1,12 +1,12 @@
 from enum import Enum, auto
 
-class Token():
-    class Type(Enum):
-        SB_PLUS  = auto()
-        SB_MINUS = auto()
-        INTEGER  = auto()
-        KW_D     = auto()
+class TokenType(Enum):
+    SB_PLUS  = auto()
+    SB_MINUS = auto()
+    INTEGER  = auto()
+    KW_D     = auto()
 
+class Token():
     def __init__(self, kind = None, value = None):
         self.kind  = kind
         self.value = value
@@ -70,16 +70,16 @@ class Tokenizer():
         return token
 
     def _getplus(self):
-        return self._extracttoken(Token.Type.SB_PLUS)
+        return self._extracttoken(TokenType.SB_PLUS)
 
     def _getminus(self):
-        return self._extracttoken(Token.Type.SB_MINUS)
+        return self._extracttoken(TokenType.SB_MINUS)
 
     def _getinteger(self):
-        return self._extracttoken(Token.Type.INTEGER, int(self._tokenstring()))
+        return self._extracttoken(TokenType.INTEGER, int(self._tokenstring()))
 
     def _getdice(self):
-        return self._extracttoken(Token.Type.KW_D)
+        return self._extracttoken(TokenType.KW_D)
 
     def _issymbolplus(self, token):
         return token == '+'
