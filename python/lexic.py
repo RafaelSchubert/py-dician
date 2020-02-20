@@ -35,9 +35,13 @@ class Tokenizer():
             return self._getdice()
 
         if current.isdigit():
-            return self._getinteger()
+            return self._readinteger()
 
         return None
+
+    def _readinteger(self):
+        self._skipdigits()
+        return self._getinteger()
 
     def _hassymbolsleft(self):
         return self._current_index < len(self._text)
@@ -63,7 +67,7 @@ class Tokenizer():
             else:
                 break
 
-    def _skip_digits(self):
+    def _skipdigits(self):
         while self._hassymbolsleft():
             if self._peek().isdigit():
                 self._current_index += 1
@@ -102,7 +106,7 @@ class Tokenizer():
         return token.casefold() == 'd'
 
 if __name__ == '__main__':
-    tkr   = Tokenizer('d5d6')
+    tkr   = Tokenizer('2d10 + d6 - 3')
     token = tkr.fetch()
 
     while token != None:
