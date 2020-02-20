@@ -1,5 +1,9 @@
 from enum import Enum, auto
 
+SYMBOL_PLUS  = '+'
+SYMBOL_MINUS = '-'
+KEYWORD_D    = 'd'
+
 class TokenType(Enum):
     SB_PLUS  = auto()
     SB_MINUS = auto()
@@ -97,13 +101,13 @@ class Tokenizer():
         return self._extracttoken(TokenType.KW_D)
 
     def _issymbolplus(self, token):
-        return token == '+'
+        return token == SYMBOL_PLUS
 
     def _issymbolminus(self, token):
-        return token == '-'
+        return token == SYMBOL_MINUS
 
     def _iskeywordd(self, token):
-        return token.casefold() == 'd'
+        return token.casefold() == KEYWORD_D
 
 if __name__ == '__main__':
     tkr   = Tokenizer('2d10 + d6 - 3')
