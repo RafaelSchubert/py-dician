@@ -89,16 +89,16 @@ class Tokenizer():
         return token
 
     def _getplus(self):
-        return self._extracttoken(TokenType.SB_PLUS)
+        return self._extracttoken(TokenType.SB_PLUS, SYMBOL_PLUS)
 
     def _getminus(self):
-        return self._extracttoken(TokenType.SB_MINUS)
+        return self._extracttoken(TokenType.SB_MINUS, SYMBOL_MINUS)
 
     def _getinteger(self):
         return self._extracttoken(TokenType.INTEGER, int(self._tokenstring()))
 
     def _getdice(self):
-        return self._extracttoken(TokenType.KW_D)
+        return self._extracttoken(TokenType.KW_D, KEYWORD_D)
 
     def _issymbolplus(self, token):
         return token == SYMBOL_PLUS
