@@ -10,10 +10,37 @@ class TokenType(Enum):
     INTEGER  = auto()
     KW_D     = auto()
 
+    def issymbol(self):
+        return self == TokenType.SB_PLUS or self == TokenType.SB_MINUS
+
+    def iskeyword(self):
+        return self == TokenType.KW_D
+    
+    def isliteral(self):
+        return self == TokenType.INTEGER
+
+    def __str__(self):
+        if self == TokenType.SB_PLUS:
+            return 'Plus'
+
+        if self == TokenType.SB_MINUS:
+            return 'Minus'
+
+        if self == TokenType.KW_D:
+            return 'Dice'
+
+        if self == TokenType.INTEGER:
+            return 'Integer'
+
+        return 'None'
+
 class Token():
     def __init__(self, kind = None, value = None):
         self.kind  = kind
         self.value = value
+
+    def __str__(self):
+        return str(self.value)
 
 class Tokenizer():
     def __init__(self, text = ''):
@@ -113,6 +140,6 @@ if __name__ == '__main__':
     token = tkr.fetch()
 
     while token != None:
-        print(token.kind, token.value)
+        print(token)
 
         token = tkr.fetch()
