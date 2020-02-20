@@ -64,19 +64,18 @@ class Tokenizer():
             
         return symbol
 
-    def _skipblanks(self):
+    def _skipwhile(self, condition):
         while self._hassymbolsleft():
-            if self._peek().isspace():
+            if condition(self._peek()):
                 self._current_index += 1
             else:
                 break
 
+    def _skipblanks(self):
+        self._skipwhile(lambda x: x.isspace())
+
     def _skipdigits(self):
-        while self._hassymbolsleft():
-            if self._peek().isdigit():
-                self._current_index += 1
-            else:
-                break
+        self._skipwhile(lambda x: x.isdigit())
 
     def _tokenstring(self):
         return self._text[self._token_start:self._current_index]
