@@ -60,6 +60,13 @@ class UnexpectedSymbolError(TokenizerError):
     def __str__(self):
         return f'An unexpected symbol was found at position {self.position}. Symbol = "{self.symbol}".'
 
+class EndOfParseError(TokenizerError):
+    def __init__(self, position):
+        self.position = position
+
+    def __str__(self):
+        return f'The parsing ended at position {self.position}.'
+
 class Tokenizer():
     def __init__(self, text = ''):
         self.parse(text)
@@ -72,7 +79,10 @@ class Tokenizer():
     def fetch(self):
         self._skipblanks()
 
-        current = self._read()
+        try:
+            current = self._read()
+        except EndOfTextError as e:
+            raise EndOfParseError(e.position)
 
         if self._issymbolplus(current):
             return self._getplus()
@@ -85,6 +95,8 @@ class Tokenizer():
 
         if current.isdigit():
             return self._readinteger()
+
+        self._token_start = self._current_index
 
         raise UnexpectedSymbolError(current, self._current_index)
 
@@ -153,12 +165,15 @@ class Tokenizer():
         return token.casefold() == KEYWORD_D
 
 if __name__ == '__main__':
-    tkr = Tokenizer('2da10 + d6 - 3')
+    tkr = Tokenizer('2da10 f+ dh6 - 3')
 
     try:
         while True:
-            print(tkr.fetch())
-    except EndOfTextError:
-        print('Reached the end of the string.')
+            try:
+                print(tkr.fetch())
+            except UnexpectedSymbolError as e:
+                print(e)
+    except EndOfParseError:
+        pass
     except TokenizerError as e:
         print(e)
