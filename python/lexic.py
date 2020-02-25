@@ -42,6 +42,24 @@ class Token():
     def __str__(self):
         return str(self.value)
 
+class TokenizerError(Exception):
+    pass
+
+class EndOfTextError(TokenizerError):
+    def __init__(self, position):
+        self.position = position
+
+    def __str__(self):
+        return f'The end of the text was reached at position {self.position}.'
+
+class UnexpectedSymbolError(TokenizerError):
+    def __init__(self, symbol, position):
+        self.symbol   = symbol
+        self.position = position
+
+    def __str__(self):
+        return f'An unexpected symbol was found at position {self.position}. Symbol = "{self.symbol}".'
+
 class Tokenizer():
     def __init__(self, text = ''):
         self.parse(text)
@@ -68,7 +86,7 @@ class Tokenizer():
         if current.isdigit():
             return self._readinteger()
 
-        return None
+        raise UnexpectedSymbolError(current, self._current_index)
 
     def _readinteger(self):
         self._skipdigits()
@@ -81,13 +99,12 @@ class Tokenizer():
         if self._hassymbolsleft():
             return self._text[self._current_index]
 
-        return '\x00'
+        raise EndOfTextError(self._current_index)
 
     def _read(self):
         symbol = self._peek()
 
-        if symbol != '\x00':
-            self._current_index += 1
+        self._current_index += 1
             
         return symbol
 
@@ -136,10 +153,12 @@ class Tokenizer():
         return token.casefold() == KEYWORD_D
 
 if __name__ == '__main__':
-    tkr   = Tokenizer('2d10 + d6 - 3')
-    token = tkr.fetch()
+    tkr = Tokenizer('2da10 + d6 - 3')
 
-    while token != None:
-        print(token)
-
-        token = tkr.fetch()
+    try:
+        while True:
+            print(tkr.fetch())
+    except EndOfTextError:
+        print('Reached the end of the string.')
+    except TokenizerError as e:
+        print(e)
