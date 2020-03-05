@@ -5,10 +5,14 @@ SYMBOL_MINUS = '-'
 KEYWORD_D    = 'd'
 
 class TokenType(Enum):
+    END      = auto()
     SB_PLUS  = auto()
     SB_MINUS = auto()
     INTEGER  = auto()
     KW_D     = auto()
+
+    def isend(self):
+        return self == TokenType.END
 
     def issymbol(self):
         return self == TokenType.SB_PLUS or self == TokenType.SB_MINUS
@@ -20,6 +24,9 @@ class TokenType(Enum):
         return self == TokenType.INTEGER
 
     def __str__(self):
+        if self == TokenType.END:
+            return 'End'
+
         if self == TokenType.SB_PLUS:
             return 'Plus'
 
@@ -60,13 +67,6 @@ class UnexpectedSymbolError(TokenizerError):
     def __str__(self):
         return f'An unexpected symbol was found at position {self.position}. Symbol = "{self.symbol}".'
 
-class EndOfParseError(TokenizerError):
-    def __init__(self, position):
-        self.position = position
-
-    def __str__(self):
-        return f'The parsing ended at position {self.position}.'
-
 class Tokenizer():
     def __init__(self, text = ''):
         self.parse(text)
@@ -81,8 +81,8 @@ class Tokenizer():
 
         try:
             current = self._read()
-        except EndOfTextError as e:
-            raise EndOfParseError(e.position)
+        except EndOfTextError:
+            return Token(TokenType.END)
 
         if self._issymbolplus(current):
             return self._getplus()
@@ -168,12 +168,13 @@ if __name__ == '__main__':
     tkr = Tokenizer('2da10 f+ dh6 - 3')
 
     try:
-        while True:
-            try:
-                print(tkr.fetch())
-            except UnexpectedSymbolError as e:
-                print(e)
-    except EndOfParseError:
-        pass
+        keep_fetching = True
+
+        while keep_fetching:
+            token = tkr.fetch()
+
+            print(token)
+
+            keep_fetching = not token.kind.isend()
     except TokenizerError as e:
         print(e)
