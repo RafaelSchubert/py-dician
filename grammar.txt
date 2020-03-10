@@ -8,16 +8,16 @@ integer = ("0" | [1-9] [0-9]*)
 # Grammar
 <roll_expression> ::= <sum_or_sub>
 
-<sum_or_sub>            ::= <dice_combo> <sum_or_sub_right_hand>
+<sum_or_sub>            ::= <dice_or_integer> <sum_or_sub_right_hand>
 <sum_or_sub_right_hand> ::= <plus_or_minus> <sum_or_sub>
                           | &
 
-<dice_combo> ::= integer <dice_combo_right_hand>
+<dice_or_integer> ::= integer <optional_die>
 
-<dice_combo_right_hand> ::= <dice_expression>
-                          | &
+<optional_die> ::= <die_expression>
+                 | &
 
-<dice_expression> ::= dice_tag integer
+<die_expression> ::= dice_tag integer
 
 <plus_or_minus> ::= plus
                   | minus
