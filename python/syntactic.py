@@ -40,13 +40,19 @@ class Parser():
         if self._token.kind == lexic.TokenType.INTEGER:
             self._nexttoken()
             return self._optionaldieexpr()
-        raise UnexpectedTokenError(self._token, lexic.TokenType.INTEGER)
+        return self._dieexpr()
 
     def _optionaldieexpr(self):
         if self._token.kind == lexic.TokenType.KW_D:
             self._nexttoken()
             return self._diefaceexpr()
         return True
+
+    def _dieexpr(self):
+        if self._token.kind == lexic.TokenType.KW_D:
+            self._nexttoken()
+            return self._diefaceexpr()
+        raise UnexpectedTokenError(self._token, lexic.TokenType.KW_D)
 
     def _diefaceexpr(self):
         if self._token.kind == lexic.TokenType.INTEGER:

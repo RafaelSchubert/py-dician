@@ -12,7 +12,8 @@ integer = ("0" | [1-9] [0-9]*)
 <sum_or_sub_right_hand> ::= <plus_or_minus> <sum_or_sub>
                           | &
 
-<dice_or_integer> ::= integer <optional_die>
+<dice_or_integer> ::= <die_expression>
+                    | integer <optional_die>
 
 <optional_die> ::= <die_expression>
                  | &
