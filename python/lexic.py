@@ -1,21 +1,33 @@
 from enum import Enum, auto
 
-SYMBOL_PLUS  = '+'
-SYMBOL_MINUS = '-'
-KEYWORD_D    = 'd'
+SYMBOL_PLUS     = '+'
+SYMBOL_MINUS    = '-'
+SYMBOL_MULTIPLY = '*'
+SYMBOL_DIVIDE   = '/'
+KEYWORD_D       = 'd'
 
 class TokenType(Enum):
-    END      = auto()
-    SB_PLUS  = auto()
-    SB_MINUS = auto()
-    INTEGER  = auto()
-    KW_D     = auto()
+    END         = auto()
+    SB_PLUS     = auto()
+    SB_MINUS    = auto()
+    SB_MULTIPLY = auto()
+    SB_DIVIDE   = auto()
+    INTEGER     = auto()
+    KW_D        = auto()
 
     def isend(self):
         return self == TokenType.END
 
     def issymbol(self):
-        return self == TokenType.SB_PLUS or self == TokenType.SB_MINUS
+        if self == TokenType.SB_PLUS:
+            return True
+        if self == TokenType.SB_MINUS:
+            return True
+        if self == TokenType.SB_MULTIPLY:
+            return True
+        if self == TokenType.SB_DIVIDE:
+            return True
+        return False
 
     def iskeyword(self):
         return self == TokenType.KW_D
@@ -26,19 +38,18 @@ class TokenType(Enum):
     def __str__(self):
         if self == TokenType.END:
             return 'End'
-
         if self == TokenType.SB_PLUS:
             return 'Plus'
-
         if self == TokenType.SB_MINUS:
             return 'Minus'
-
+        if self == TokenType.SB_MULTIPLY:
+            return 'Multiply'
+        if self == TokenType.SB_DIVIDE:
+            return 'Divide'
         if self == TokenType.KW_D:
             return 'Dice'
-
         if self == TokenType.INTEGER:
             return 'Integer'
-
         return 'None'
 
 class Token():
@@ -78,26 +89,23 @@ class Tokenizer():
 
     def fetch(self):
         self._skipblanks()
-
         try:
             current = self._read()
         except EndOfTextError:
             return Token(TokenType.END)
-
         if self._issymbolplus(current):
             return self._getplus()
-
         if self._issymbolminus(current):
             return self._getminus()
-
+        if self._issymbolmultiply(current):
+            return self._getmultiply()
+        if self._issymboldivide(current):
+            return self._getdivide()
         if self._iskeywordd(current):
             return self._getdice()
-
         if current.isdigit():
             return self._readinteger()
-
         self._token_start = self._current_index
-
         raise UnexpectedSymbolError(current, self._current_index)
 
     def _readinteger(self):
@@ -106,18 +114,15 @@ class Tokenizer():
 
     def _hassymbolsleft(self):
         return self._current_index < len(self._text)
-    
+
     def _peek(self):
         if self._hassymbolsleft():
             return self._text[self._current_index]
-
         raise EndOfTextError(self._current_index)
 
     def _read(self):
         symbol = self._peek()
-
         self._current_index += 1
-            
         return symbol
 
     def _skipwhile(self, condition):
@@ -138,9 +143,7 @@ class Tokenizer():
 
     def _extracttoken(self, kind, value = None):
         token = Token(kind, value)
-
         self._token_start = self._current_index
-
         return token
 
     def _getplus(self):
@@ -148,6 +151,12 @@ class Tokenizer():
 
     def _getminus(self):
         return self._extracttoken(TokenType.SB_MINUS, SYMBOL_MINUS)
+
+    def _getmultiply(self):
+        return self._extracttoken(TokenType.SB_MULTIPLY, SYMBOL_MULTIPLY)
+
+    def _getdivide(self):
+        return self._extracttoken(TokenType.SB_DIVIDE, SYMBOL_DIVIDE)
 
     def _getinteger(self):
         return self._extracttoken(TokenType.INTEGER, int(self._tokenstring()))
@@ -161,20 +170,22 @@ class Tokenizer():
     def _issymbolminus(self, token):
         return token == SYMBOL_MINUS
 
+    def _issymbolmultiply(self, token):
+        return token == SYMBOL_MULTIPLY
+
+    def _issymboldivide(self, token):
+        return token == SYMBOL_DIVIDE
+
     def _iskeywordd(self, token):
         return token.casefold() == KEYWORD_D
 
 if __name__ == '__main__':
     tkr = Tokenizer('2da10 f+ dh6 - 3')
-
     try:
         keep_fetching = True
-
         while keep_fetching:
             token = tkr.fetch()
-
             print(token)
-
             keep_fetching = not token.kind.isend()
     except TokenizerError as e:
         print(e)

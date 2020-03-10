@@ -1,6 +1,8 @@
 # Definitions
 plus     = "+"
 minus    = "-"
+multiply = '*'
+divide   = '/'
 dice_tag = [dD]
 
 integer = ("0" | [1-9] [0-9]*)
@@ -8,9 +10,13 @@ integer = ("0" | [1-9] [0-9]*)
 # Grammar
 <roll_expression> ::= <sum_or_sub>
 
-<sum_or_sub>            ::= <dice_or_integer> <sum_or_sub_right_hand>
+<sum_or_sub>            ::= <prod_or_div> <sum_or_sub_right_hand>
 <sum_or_sub_right_hand> ::= <plus_or_minus> <sum_or_sub>
                           | &
+
+<prod_or_div>            ::= <dice_or_integer> <prod_or_div_right_hand>
+<prod_or_div_right_hand> ::= <mult_or_div> <prod_or_div>
+                           | &
 
 <dice_or_integer> ::= <die_expression>
                     | integer <optional_die>
@@ -22,3 +28,5 @@ integer = ("0" | [1-9] [0-9]*)
 
 <plus_or_minus> ::= plus
                   | minus
+<mult_or_div>   ::= multiply
+                  | divide

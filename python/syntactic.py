@@ -32,8 +32,13 @@ class Parser():
         return self._sumorsubexpr()
 
     def _sumorsubexpr(self):
-        if self._diceorintegerexpr():
+        if self._prodordivexpr():
             return self._sumorsubrighthandexpr()
+        return False
+
+    def _prodordivexpr(self):
+        if self._diceorintegerexpr():
+            return self._prodordivrighthandexpr()
         return False
 
     def _diceorintegerexpr(self):
@@ -60,6 +65,12 @@ class Parser():
             return True
         raise UnexpectedTokenError(self._token, lexic.TokenType.INTEGER)
 
+    def _prodordivrighthandexpr(self):
+        if self._token.kind == lexic.TokenType.SB_MULTIPLY or self._token.kind == lexic.TokenType.SB_DIVIDE:
+            self._nexttoken()
+            return self._prodordivexpr()
+        return True
+
     def _sumorsubrighthandexpr(self):
         if self._token.kind == lexic.TokenType.SB_PLUS or self._token.kind == lexic.TokenType.SB_MINUS:
             self._nexttoken()
@@ -70,11 +81,9 @@ class Parser():
         self._token = self._tokenizer.fetch()
 
 if __name__ == '__main__':
-    expression = '3 + 1 + 2d6 - 2 + 1d6 + 3d10 - 5'
+    expression = '3 * 1 / 2d6 - 2 + 1d6 / 3d10 - 5'
     my_parser  = Parser()
-
     print(f'Is "{expression}" a valid roll expression?')
-
     try:
         print('Yes.' if my_parser.parse(expression) else 'No.')
     except (lexic.TokenizerError, ParserError) as e:
