@@ -24,9 +24,7 @@ class Parser():
         self._nexttoken()
         if self._token.kind == lexic.TokenType.END:
             return True
-        if self._rollexpr():
-            return True
-        raise UnexpectedTokenError(self._token)
+        return self._rollexpr()
 
     def _rollexpr(self):
         return self._arithmeticexpr()
@@ -53,14 +51,14 @@ class Parser():
         return False
 
     def _prodordivexpr(self):
-        if self._valueexpr():
+        if self._signaledvalueexpr():
             return self._prodordivrighthandexpr()
         return False
 
     def _prodordivrighthandexpr(self):
         if not self._multordivexpr():
             return True
-        if not self._valueexpr():
+        if not self._signaledvalueexpr():
             raise UnexpectedTokenError(self._token)
         return self._prodordivrighthandexpr()
 
@@ -69,6 +67,13 @@ class Parser():
             self._nexttoken()
             return True
         return False
+
+    def _signaledvalueexpr(self):
+        if not self._plusorminusexpr():
+            return self._valueexpr()
+        if self._valueexpr():
+            return True
+        raise UnexpectedTokenError(self._token)
 
     def _valueexpr(self):
         return self._dicesetexpr()
@@ -114,7 +119,7 @@ class Parser():
         self._token = self._tokenizer.fetch()
 
 if __name__ == '__main__':
-    expression = '3 * 1 / 2d6 - 2 + 1dd6 / 3d10 - 5 + d4d8 * dd3dd12'
+    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -3d10 - 5 + +d4d8 * dd3dd12'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:

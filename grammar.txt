@@ -16,9 +16,12 @@ integer = ("0" | [1-9] [0-9]*)
 <sum_or_sub_right_hand> ::= <plus_or_minus> <prod_or_div> <sum_or_sub_right_hand>
                           | &
 
-<prod_or_div>            ::= <value> <prod_or_div_right_hand>
-<prod_or_div_right_hand> ::= <mult_or_div> <value> <prod_or_div_right_hand>
+<prod_or_div>            ::= <signaled_value> <prod_or_div_right_hand>
+<prod_or_div_right_hand> ::= <mult_or_div> <signaled_value> <prod_or_div_right_hand>
                            | &
+
+<signaled_value> ::= <plus_or_minus> <value>
+                   | <value>
 
 <value> ::= <dice_set>
 
