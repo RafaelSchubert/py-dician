@@ -11,11 +11,11 @@ integer = ("0" | [1-9] [0-9]*)
 <roll_expression> ::= <sum_or_sub>
 
 <sum_or_sub>            ::= <prod_or_div> <sum_or_sub_right_hand>
-<sum_or_sub_right_hand> ::= <plus_or_minus> <sum_or_sub>
+<sum_or_sub_right_hand> ::= <plus_or_minus> <prod_or_div> <sum_or_sub_right_hand>
                           | &
 
 <prod_or_div>            ::= <dice_or_integer> <prod_or_div_right_hand>
-<prod_or_div_right_hand> ::= <mult_or_div> <prod_or_div>
+<prod_or_div_right_hand> ::= <mult_or_div> <dice_combo> <prod_or_div_right_hand>
                            | &
 
 <dice_or_integer> ::= <die_expression>

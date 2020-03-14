@@ -66,16 +66,42 @@ class Parser():
         raise UnexpectedTokenError(self._token, lexic.TokenType.INTEGER)
 
     def _prodordivrighthandexpr(self):
-        if self._token.kind == lexic.TokenType.SB_MULTIPLY or self._token.kind == lexic.TokenType.SB_DIVIDE:
-            self._nexttoken()
-            return self._prodordivexpr()
+        if self._multordivexpr():
+            self._diceorintegerexpr()
+            return self._prodordivrighthandexpr()
         return True
 
     def _sumorsubrighthandexpr(self):
-        if self._token.kind == lexic.TokenType.SB_PLUS or self._token.kind == lexic.TokenType.SB_MINUS:
-            self._nexttoken()
-            return self._sumorsubexpr()
+        if self._plusorminusexpr():
+            self._prodordivexpr()
+            return self._sumorsubrighthandexpr()
         return True
+
+    def _plusorminusexpr(self):
+        if self._tokenisplusorminus():
+            self._nexttoken()
+            return True
+        return False
+
+    def _multordivexpr(self):
+        if self._tokenismultordiv():
+            self._nexttoken()
+            return True
+        return False
+
+    def _tokenisplusorminus(self):
+        if self._token.kind == lexic.TokenType.SB_PLUS:
+            return True
+        if self._token.kind == lexic.TokenType.SB_MINUS:
+            return True
+        return False
+
+    def _tokenismultordiv(self):
+        if self._token.kind == lexic.TokenType.SB_MULTIPLY:
+            return True
+        if self._token.kind == lexic.TokenType.SB_DIVIDE:
+            return True
+        return False
 
     def _nexttoken(self):
         self._token = self._tokenizer.fetch()
