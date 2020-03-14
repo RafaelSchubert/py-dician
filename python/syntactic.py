@@ -45,10 +45,7 @@ class Parser():
         return self._sumorsubrighthandexpr()
 
     def _plusorminusexpr(self):
-        if self._tokenisplusorminus():
-            self._nexttoken()
-            return True
-        return False
+        return self._consumeanyof(lexic.TokenType.SB_PLUS, lexic.TokenType.SB_MINUS)
 
     def _prodordivexpr(self):
         if self._signaledvalueexpr():
@@ -63,10 +60,7 @@ class Parser():
         return self._prodordivrighthandexpr()
 
     def _multordivexpr(self):
-        if self._tokenismultordiv():
-            self._nexttoken()
-            return True
-        return False
+        return self._consumeanyof(lexic.TokenType.SB_MULTIPLY, lexic.TokenType.SB_DIVIDE)
 
     def _signaledvalueexpr(self):
         if not self._plusorminusexpr():
@@ -104,16 +98,10 @@ class Parser():
         raise UnexpectedTokenError(self._token)
 
     def _leftparenthesisexpr(self):
-        if self._token.kind != lexic.TokenType.SB_LPARENTHESIS:
-            return False
-        self._nexttoken()
-        return True
+        return self._consumeanyof(lexic.TokenType.SB_LPARENTHESIS)
 
     def _rightparenthesisexpr(self):
-        if self._token.kind != lexic.TokenType.SB_RPARENTHESIS:
-            return False
-        self._nexttoken()
-        return True
+        return self._consumeanyof(lexic.TokenType.SB_RPARENTHESIS)
 
     def _dieexpr(self):
         if not self._dietagexpr():
@@ -123,37 +111,22 @@ class Parser():
         raise UnexpectedTokenError(self._token)
 
     def _dietagexpr(self):
-        if self._token.kind != lexic.TokenType.KW_D:
-            return False
-        self._nexttoken()
-        return True
+        return self._consumeanyof(lexic.TokenType.KW_D)
 
     def _integerexpr(self):
-        if self._token.kind != lexic.TokenType.INTEGER:
+        return self._consumeanyof(lexic.TokenType.INTEGER)
+
+    def _consumeanyof(self, *expected_token_types):
+        if not self._token.kind in expected_token_types:
             return False
         self._nexttoken()
         return True
-
-    def _tokenisplusorminus(self):
-        if self._token.kind == lexic.TokenType.SB_PLUS:
-            return True
-        if self._token.kind == lexic.TokenType.SB_MINUS:
-            return True
-        return False
-
-    def _tokenismultordiv(self):
-        if self._token.kind == lexic.TokenType.SB_MULTIPLY:
-            return True
-        if self._token.kind == lexic.TokenType.SB_DIVIDE:
-            return True
-        return False
 
     def _nexttoken(self):
         self._token = self._tokenizer.fetch()
 
 if __name__ == '__main__':
-    # expression = '3 * +1 / 2d6 - 2 + 1dd6 / -3d10 - 5 + +d4d8 * dd3dd12'
-    expression = '(1 + 1)d6'
+    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -(2 + 1)d10 - 5 + +d4d8 * dd3dd12'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
