@@ -8,7 +8,9 @@ dice_tag = [dD]
 integer = ("0" | [1-9] [0-9]*)
 
 # Grammar
-<roll_expression> ::= <sum_or_sub>
+<roll_expression> ::= <arithmetic>
+
+<arithmetic> ::= <sum_or_sub>
 
 <sum_or_sub>            ::= <prod_or_div> <sum_or_sub_right_hand>
 <sum_or_sub_right_hand> ::= <plus_or_minus> <prod_or_div> <sum_or_sub_right_hand>

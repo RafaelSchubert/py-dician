@@ -29,6 +29,9 @@ class Parser():
         raise UnexpectedTokenError(self._token)
 
     def _rollexpr(self):
+        return self._arithmeticexpr()
+
+    def _arithmeticexpr(self):
         return self._sumorsubexpr()
 
     def _sumorsubexpr(self):
