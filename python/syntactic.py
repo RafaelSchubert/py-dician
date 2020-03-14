@@ -88,18 +88,51 @@ class Parser():
         return True
 
     def _numberexpr(self):
-        if self._token.kind == lexic.TokenType.INTEGER:
-            self._nexttoken()
+        if self._parenthesizedexpr():
             return True
-        return self._dieexpr()
+        if self._dieexpr():
+            return True
+        return self._integerexpr()
 
-    def _dieexpr(self):
-        if self._token.kind != lexic.TokenType.KW_D:
+    def _parenthesizedexpr(self):
+        if not self._leftparenthesisexpr():
+            return False
+        if not self._arithmeticexpr():
+            raise UnexpectedTokenError(self._token)
+        if self._rightparenthesisexpr():
+            return True
+        raise UnexpectedTokenError(self._token)
+
+    def _leftparenthesisexpr(self):
+        if self._token.kind != lexic.TokenType.SB_LPARENTHESIS:
             return False
         self._nexttoken()
+        return True
+
+    def _rightparenthesisexpr(self):
+        if self._token.kind != lexic.TokenType.SB_RPARENTHESIS:
+            return False
+        self._nexttoken()
+        return True
+
+    def _dieexpr(self):
+        if not self._dietagexpr():
+            return False
         if self._numberexpr():
             return True
         raise UnexpectedTokenError(self._token)
+
+    def _dietagexpr(self):
+        if self._token.kind != lexic.TokenType.KW_D:
+            return False
+        self._nexttoken()
+        return True
+
+    def _integerexpr(self):
+        if self._token.kind != lexic.TokenType.INTEGER:
+            return False
+        self._nexttoken()
+        return True
 
     def _tokenisplusorminus(self):
         if self._token.kind == lexic.TokenType.SB_PLUS:
@@ -119,7 +152,8 @@ class Parser():
         self._token = self._tokenizer.fetch()
 
 if __name__ == '__main__':
-    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -3d10 - 5 + +d4d8 * dd3dd12'
+    # expression = '3 * +1 / 2d6 - 2 + 1dd6 / -3d10 - 5 + +d4d8 * dd3dd12'
+    expression = '(1 + 1)d6'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:

@@ -1,9 +1,11 @@
 # Definitions
-plus     = "+"
-minus    = "-"
-multiply = '*'
-divide   = '/'
-dice_tag = [dD]
+left_parenthesis  = "("
+right_parenthesis = ")"
+plus              = "+"
+minus             = "-"
+multiply          = '*'
+divide            = '/'
+die_tag           = [dD]
 
 integer = ("0" | [1-9] [0-9]*)
 
@@ -29,10 +31,11 @@ integer = ("0" | [1-9] [0-9]*)
 <dice_set_right_hand> ::= <die>
                         | &
 
-<number> ::= <die>
+<number> ::= left_parenthesis <arithmetic> right_parenthesis
+           | <die>
            | integer
 
-<die> ::= dice_tag <number>
+<die> ::= die_tag <number>
 
 <plus_or_minus> ::= plus
                   | minus

@@ -1,24 +1,32 @@
 from enum import Enum, auto
 
-SYMBOL_PLUS     = '+'
-SYMBOL_MINUS    = '-'
-SYMBOL_MULTIPLY = '*'
-SYMBOL_DIVIDE   = '/'
-KEYWORD_D       = 'd'
+SYMBOL_LEFT_PARENTHESIS  = '('
+SYMBOL_RIGHT_PARENTHESIS = ')'
+SYMBOL_PLUS              = '+'
+SYMBOL_MINUS             = '-'
+SYMBOL_MULTIPLY          = '*'
+SYMBOL_DIVIDE            = '/'
+KEYWORD_D                = 'd'
 
 class TokenType(Enum):
-    END         = auto()
-    SB_PLUS     = auto()
-    SB_MINUS    = auto()
-    SB_MULTIPLY = auto()
-    SB_DIVIDE   = auto()
-    INTEGER     = auto()
-    KW_D        = auto()
+    END             = auto()
+    SB_LPARENTHESIS = auto()
+    SB_RPARENTHESIS = auto()
+    SB_PLUS         = auto()
+    SB_MINUS        = auto()
+    SB_MULTIPLY     = auto()
+    SB_DIVIDE       = auto()
+    INTEGER         = auto()
+    KW_D            = auto()
 
     def isend(self):
         return self == TokenType.END
 
     def issymbol(self):
+        if self == TokenType.SB_LPARENTHESIS:
+            return True
+        if self == TokenType.SB_RPARENTHESIS:
+            return True
         if self == TokenType.SB_PLUS:
             return True
         if self == TokenType.SB_MINUS:
@@ -38,6 +46,10 @@ class TokenType(Enum):
     def __str__(self):
         if self == TokenType.END:
             return 'End'
+        if self == TokenType.SB_LPARENTHESIS:
+            return 'Left Parethesis'
+        if self == TokenType.SB_RPARENTHESIS:
+            return 'Right Parethesis'
         if self == TokenType.SB_PLUS:
             return 'Plus'
         if self == TokenType.SB_MINUS:
@@ -93,6 +105,10 @@ class Tokenizer():
             current = self._read()
         except EndOfTextError:
             return Token(TokenType.END)
+        if self._issymbollparenthesis(current):
+            return self._getlparenthesis()
+        if self._issymbolrparenthesis(current):
+            return self._getrparenthesis()
         if self._issymbolplus(current):
             return self._getplus()
         if self._issymbolminus(current):
@@ -146,6 +162,12 @@ class Tokenizer():
         self._token_start = self._current_index
         return token
 
+    def _getlparenthesis(self):
+        return self._extracttoken(TokenType.SB_LPARENTHESIS, SYMBOL_LEFT_PARENTHESIS)
+
+    def _getrparenthesis(self):
+        return self._extracttoken(TokenType.SB_RPARENTHESIS, SYMBOL_RIGHT_PARENTHESIS)
+
     def _getplus(self):
         return self._extracttoken(TokenType.SB_PLUS, SYMBOL_PLUS)
 
@@ -163,6 +185,12 @@ class Tokenizer():
 
     def _getdice(self):
         return self._extracttoken(TokenType.KW_D, KEYWORD_D)
+
+    def _issymbollparenthesis(self, token):
+        return token == SYMBOL_LEFT_PARENTHESIS
+
+    def _issymbolrparenthesis(self, token):
+        return token == SYMBOL_RIGHT_PARENTHESIS
 
     def _issymbolplus(self, token):
         return token == SYMBOL_PLUS
