@@ -14,17 +14,20 @@ integer = ("0" | [1-9] [0-9]*)
 <sum_or_sub_right_hand> ::= <plus_or_minus> <prod_or_div> <sum_or_sub_right_hand>
                           | &
 
-<prod_or_div>            ::= <dice_or_integer> <prod_or_div_right_hand>
-<prod_or_div_right_hand> ::= <mult_or_div> <dice_combo> <prod_or_div_right_hand>
+<prod_or_div>            ::= <value> <prod_or_div_right_hand>
+<prod_or_div_right_hand> ::= <mult_or_div> <value> <prod_or_div_right_hand>
                            | &
 
-<dice_or_integer> ::= <die_expression>
-                    | integer <optional_die>
+<value> ::= <dice_set>
 
-<optional_die> ::= <die_expression>
-                 | &
+<dice_set>            ::= <number> <dice_set_right_hand>
+<dice_set_right_hand> ::= <die>
+                        | &
 
-<die_expression> ::= dice_tag integer
+<number> ::= <die>
+           | integer
+
+<die> ::= dice_tag <number>
 
 <plus_or_minus> ::= plus
                   | minus

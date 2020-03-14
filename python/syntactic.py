@@ -36,46 +36,12 @@ class Parser():
             return self._sumorsubrighthandexpr()
         return False
 
-    def _prodordivexpr(self):
-        if self._diceorintegerexpr():
-            return self._prodordivrighthandexpr()
-        return False
-
-    def _diceorintegerexpr(self):
-        if self._token.kind == lexic.TokenType.INTEGER:
-            self._nexttoken()
-            return self._optionaldieexpr()
-        return self._dieexpr()
-
-    def _optionaldieexpr(self):
-        if self._token.kind == lexic.TokenType.KW_D:
-            self._nexttoken()
-            return self._diefaceexpr()
-        return True
-
-    def _dieexpr(self):
-        if self._token.kind == lexic.TokenType.KW_D:
-            self._nexttoken()
-            return self._diefaceexpr()
-        raise UnexpectedTokenError(self._token, lexic.TokenType.KW_D)
-
-    def _diefaceexpr(self):
-        if self._token.kind == lexic.TokenType.INTEGER:
-            self._nexttoken()
-            return True
-        raise UnexpectedTokenError(self._token, lexic.TokenType.INTEGER)
-
-    def _prodordivrighthandexpr(self):
-        if self._multordivexpr():
-            self._diceorintegerexpr()
-            return self._prodordivrighthandexpr()
-        return True
-
     def _sumorsubrighthandexpr(self):
-        if self._plusorminusexpr():
-            self._prodordivexpr()
-            return self._sumorsubrighthandexpr()
-        return True
+        if not self._plusorminusexpr():
+            return True
+        if not self._prodordivexpr():
+            raise UnexpectedTokenError(self._token)
+        return self._sumorsubrighthandexpr()
 
     def _plusorminusexpr(self):
         if self._tokenisplusorminus():
@@ -83,11 +49,49 @@ class Parser():
             return True
         return False
 
+    def _prodordivexpr(self):
+        if self._valueexpr():
+            return self._prodordivrighthandexpr()
+        return False
+
+    def _prodordivrighthandexpr(self):
+        if not self._multordivexpr():
+            return True
+        if not self._valueexpr():
+            raise UnexpectedTokenError(self._token)
+        return self._prodordivrighthandexpr()
+
     def _multordivexpr(self):
         if self._tokenismultordiv():
             self._nexttoken()
             return True
         return False
+
+    def _valueexpr(self):
+        return self._dicesetexpr()
+
+    def _dicesetexpr(self):
+        if self._numberexpr():
+            return self._dicesetrighthandexpr()
+        return False
+
+    def _dicesetrighthandexpr(self):
+        self._dieexpr()
+        return True
+
+    def _numberexpr(self):
+        if self._token.kind == lexic.TokenType.INTEGER:
+            self._nexttoken()
+            return True
+        return self._dieexpr()
+
+    def _dieexpr(self):
+        if self._token.kind != lexic.TokenType.KW_D:
+            return False
+        self._nexttoken()
+        if self._numberexpr():
+            return True
+        raise UnexpectedTokenError(self._token)
 
     def _tokenisplusorminus(self):
         if self._token.kind == lexic.TokenType.SB_PLUS:
@@ -107,7 +111,7 @@ class Parser():
         self._token = self._tokenizer.fetch()
 
 if __name__ == '__main__':
-    expression = '3 * 1 / 2d6 - 2 + 1d6 / 3d10 - 5'
+    expression = '3 * 1 / 2d6 - 2 + 1dd6 / 3d10 - 5 + d4d8 * dd3dd12'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
