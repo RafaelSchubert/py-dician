@@ -130,9 +130,13 @@ class Tokenizer():
             return self._getdice()
         if current.isdigit():
             return self._readinteger()
+        self._unexpectedsymbol(current)
+
+    def _unexpectedsymbol(self, symbol):
+        unknown_symbol_ex = UnexpectedSymbolError(symbol, self._current_line, self._current_column)
         self._next      ()
         self._begintoken()
-        raise UnexpectedSymbolError(current, self._current_line, self._current_column)
+        raise unknown_symbol_ex
 
     def _readinteger(self):
         self._skipdigits()
