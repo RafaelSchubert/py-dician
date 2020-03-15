@@ -95,9 +95,13 @@ class Tokenizer():
         self.parse(text)
 
     def parse(self, text):
-        self._text          = text
-        self._current_index = 0
-        self._token_start   = 0
+        self._text           = text
+        self._current_index  = 0
+        self._current_line   = 1
+        self._current_column = 1
+        self._token_start    = self._current_index
+        self._token_line     = self._current_line
+        self._token_column   = self._current_column
 
     def fetch(self):
         self._skipblanks()
@@ -121,7 +125,7 @@ class Tokenizer():
             return self._getdice()
         if current.isdigit():
             return self._readinteger()
-        self._token_start = self._current_index
+        self._begintoken()
         raise UnexpectedSymbolError(current, self._current_index)
 
     def _readinteger(self):
@@ -137,7 +141,17 @@ class Tokenizer():
         raise EndOfTextError(self._current_index)
 
     def _next(self):
+        if self._peek() == '\n':
+            self._current_line   += 1
+            self._current_column  = 1
+        else:
+            self._current_column += 1
         self._current_index += 1
+
+    def _begintoken(self):
+        self._token_start  = self._current_index
+        self._token_line   = self._current_line
+        self._token_column = self._current_column
 
     def _skipwhile(self, condition):
         while self._hassymbolsleft():
@@ -155,34 +169,34 @@ class Tokenizer():
     def _tokenstring(self):
         return self._text[self._token_start:self._current_index]
 
-    def _extracttoken(self, kind, value = None):
-        token = Token(kind, value)
-        self._token_start = self._current_index
+    def _extracttoken(self, kind):
+        token = Token(kind, self._tokenstring())
+        self._begintoken()
         return token
 
     def _getlparenthesis(self):
-        return self._extracttoken(TokenType.SB_LPARENTHESIS, SYMBOL_LEFT_PARENTHESIS)
+        return self._extracttoken(TokenType.SB_LPARENTHESIS)
 
     def _getrparenthesis(self):
-        return self._extracttoken(TokenType.SB_RPARENTHESIS, SYMBOL_RIGHT_PARENTHESIS)
+        return self._extracttoken(TokenType.SB_RPARENTHESIS)
 
     def _getplus(self):
-        return self._extracttoken(TokenType.SB_PLUS, SYMBOL_PLUS)
+        return self._extracttoken(TokenType.SB_PLUS)
 
     def _getminus(self):
-        return self._extracttoken(TokenType.SB_MINUS, SYMBOL_MINUS)
+        return self._extracttoken(TokenType.SB_MINUS)
 
     def _getmultiply(self):
-        return self._extracttoken(TokenType.SB_MULTIPLY, SYMBOL_MULTIPLY)
+        return self._extracttoken(TokenType.SB_MULTIPLY)
 
     def _getdivide(self):
-        return self._extracttoken(TokenType.SB_DIVIDE, SYMBOL_DIVIDE)
+        return self._extracttoken(TokenType.SB_DIVIDE)
 
     def _getinteger(self):
-        return self._extracttoken(TokenType.INTEGER, int(self._tokenstring()))
+        return self._extracttoken(TokenType.INTEGER)
 
     def _getdice(self):
-        return self._extracttoken(TokenType.KW_D, KEYWORD_D)
+        return self._extracttoken(TokenType.KW_D)
 
     def _checkislparenthesis(self, token):
         return self._consumeifisanyof(token, SYMBOL_LEFT_PARENTHESIS)
