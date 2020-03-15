@@ -65,9 +65,11 @@ class TokenType(Enum):
         return 'None'
 
 class Token():
-    def __init__(self, kind = None, value = None):
-        self.kind  = kind
-        self.value = value
+    def __init__(self, kind, value, line, column):
+        self.kind   = kind
+        self.value  = value
+        self.line   = line
+        self.column = column
 
     def __str__(self):
         return str(self.value)
@@ -105,10 +107,11 @@ class Tokenizer():
 
     def fetch(self):
         self._skipblanks()
+        self._begintoken()
         try:
             current = self._peek()
         except EndOfTextError:
-            return Token(TokenType.END)
+            return self._extracttoken(TokenType.END)
         if self._checkislparenthesis(current):
             return self._getlparenthesis()
         if self._checkisrparenthesis(current):
@@ -125,6 +128,7 @@ class Tokenizer():
             return self._getdice()
         if current.isdigit():
             return self._readinteger()
+        self._next      ()
         self._begintoken()
         raise UnexpectedSymbolError(current, self._current_index)
 
@@ -170,7 +174,7 @@ class Tokenizer():
         return self._text[self._token_start:self._current_index]
 
     def _extracttoken(self, kind):
-        token = Token(kind, self._tokenstring())
+        token = Token(kind, self._tokenstring(), self._token_line, self._token_column)
         self._begintoken()
         return token
 
