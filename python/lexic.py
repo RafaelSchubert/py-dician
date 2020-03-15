@@ -78,19 +78,21 @@ class TokenizerError(Exception):
     pass
 
 class EndOfTextError(TokenizerError):
-    def __init__(self, position):
-        self.position = position
+    def __init__(self, line, column):
+        self.line   = line
+        self.column = column
 
     def __str__(self):
-        return f'The end of the text was reached at position {self.position}.'
+        return f'The end of the input string was reached at line {self.line}, column {self.column}.'
 
 class UnexpectedSymbolError(TokenizerError):
-    def __init__(self, symbol, position):
-        self.symbol   = symbol
-        self.position = position
+    def __init__(self, symbol, line, column):
+        self.symbol = symbol
+        self.line   = line
+        self.column = column
 
     def __str__(self):
-        return f'An unexpected symbol was found at position {self.position}. Symbol = "{self.symbol}".'
+        return f'An unexpected symbol was found at line {self.line}, column {self.column}. Symbol = "{self.symbol}".'
 
 class Tokenizer():
     def __init__(self, text = ''):
@@ -130,7 +132,7 @@ class Tokenizer():
             return self._readinteger()
         self._next      ()
         self._begintoken()
-        raise UnexpectedSymbolError(current, self._current_index)
+        raise UnexpectedSymbolError(current, self._current_line, self._current_column)
 
     def _readinteger(self):
         self._skipdigits()
@@ -142,7 +144,7 @@ class Tokenizer():
     def _peek(self):
         if self._hassymbolsleft():
             return self._text[self._current_index]
-        raise EndOfTextError(self._current_index)
+        raise EndOfTextError(self._current_line, self._current_column)
 
     def _next(self):
         if self._peek() == '\n':
