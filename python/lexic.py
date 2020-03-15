@@ -102,22 +102,22 @@ class Tokenizer():
     def fetch(self):
         self._skipblanks()
         try:
-            current = self._read()
+            current = self._peek()
         except EndOfTextError:
             return Token(TokenType.END)
-        if self._issymbollparenthesis(current):
+        if self._checkislparenthesis(current):
             return self._getlparenthesis()
-        if self._issymbolrparenthesis(current):
+        if self._checkisrparenthesis(current):
             return self._getrparenthesis()
-        if self._issymbolplus(current):
+        if self._checkisplus(current):
             return self._getplus()
-        if self._issymbolminus(current):
+        if self._checkisminus(current):
             return self._getminus()
-        if self._issymbolmultiply(current):
+        if self._checkismultiply(current):
             return self._getmultiply()
-        if self._issymboldivide(current):
+        if self._checkisdivide(current):
             return self._getdivide()
-        if self._iskeywordd(current):
+        if self._checkiskeywordd(current):
             return self._getdice()
         if current.isdigit():
             return self._readinteger()
@@ -136,15 +136,13 @@ class Tokenizer():
             return self._text[self._current_index]
         raise EndOfTextError(self._current_index)
 
-    def _read(self):
-        symbol = self._peek()
+    def _next(self):
         self._current_index += 1
-        return symbol
 
     def _skipwhile(self, condition):
         while self._hassymbolsleft():
             if condition(self._peek()):
-                self._current_index += 1
+                self._next()
             else:
                 break
 
@@ -186,26 +184,32 @@ class Tokenizer():
     def _getdice(self):
         return self._extracttoken(TokenType.KW_D, KEYWORD_D)
 
-    def _issymbollparenthesis(self, token):
-        return token == SYMBOL_LEFT_PARENTHESIS
+    def _checkislparenthesis(self, token):
+        return self._consumeifisanyof(token, SYMBOL_LEFT_PARENTHESIS)
 
-    def _issymbolrparenthesis(self, token):
-        return token == SYMBOL_RIGHT_PARENTHESIS
+    def _checkisrparenthesis(self, token):
+        return self._consumeifisanyof(token, SYMBOL_RIGHT_PARENTHESIS)
 
-    def _issymbolplus(self, token):
-        return token == SYMBOL_PLUS
+    def _checkisplus(self, token):
+        return self._consumeifisanyof(token, SYMBOL_PLUS)
 
-    def _issymbolminus(self, token):
-        return token == SYMBOL_MINUS
+    def _checkisminus(self, token):
+        return self._consumeifisanyof(token, SYMBOL_MINUS)
 
-    def _issymbolmultiply(self, token):
-        return token == SYMBOL_MULTIPLY
+    def _checkismultiply(self, token):
+        return self._consumeifisanyof(token, SYMBOL_MULTIPLY)
 
-    def _issymboldivide(self, token):
-        return token == SYMBOL_DIVIDE
+    def _checkisdivide(self, token):
+        return self._consumeifisanyof(token, SYMBOL_DIVIDE)
 
-    def _iskeywordd(self, token):
-        return token.casefold() == KEYWORD_D
+    def _checkiskeywordd(self, token):
+        return self._consumeifisanyof(token.casefold(), KEYWORD_D)
+
+    def _consumeifisanyof(self, symbol, *expected_symbols):
+        if not symbol in expected_symbols:
+            return False
+        self._next()
+        return True
 
 if __name__ == '__main__':
     tkr = Tokenizer('2da10 f+ dh6 - 3')
