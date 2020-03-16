@@ -100,40 +100,38 @@ class Tokenizer():
 
     def parse(self, text):
         self._text           = text
+        self._current_symbol = self._text[0:1]
         self._current_index  = 0
         self._current_line   = 1
         self._current_column = 1
-        self._token_start    = self._current_index
-        self._token_line     = self._current_line
-        self._token_column   = self._current_column
+        self._begintoken()
 
     def fetch(self):
-        self._skipblanks()
-        self._begintoken()
         try:
-            current = self._peek()
+            self._skipblanks()
+            self._begintoken()
+            if self._checkislparenthesis():
+                return self._getlparenthesis()
+            if self._checkisrparenthesis():
+                return self._getrparenthesis()
+            if self._checkisplus():
+                return self._getplus()
+            if self._checkisminus():
+                return self._getminus()
+            if self._checkismultiply():
+                return self._getmultiply()
+            if self._checkisdivide():
+                return self._getdivide()
+            if self._checkiskeywordd():
+                return self._getdice()
+            if self._current_symbol.isdigit():
+                return self._readinteger()
+            self._unexpectedsymbol()
         except EndOfTextError:
             return self._extracttoken(TokenType.END)
-        if self._checkislparenthesis(current):
-            return self._getlparenthesis()
-        if self._checkisrparenthesis(current):
-            return self._getrparenthesis()
-        if self._checkisplus(current):
-            return self._getplus()
-        if self._checkisminus(current):
-            return self._getminus()
-        if self._checkismultiply(current):
-            return self._getmultiply()
-        if self._checkisdivide(current):
-            return self._getdivide()
-        if self._checkiskeywordd(current):
-            return self._getdice()
-        if current.isdigit():
-            return self._readinteger()
-        self._unexpectedsymbol(current)
 
-    def _unexpectedsymbol(self, symbol):
-        unknown_symbol_ex = UnexpectedSymbolError(symbol, self._current_line, self._current_column)
+    def _unexpectedsymbol(self):
+        unknown_symbol_ex = UnexpectedSymbolError(self._current_symbol, self._current_line, self._current_column)
         self._next      ()
         self._begintoken()
         raise unknown_symbol_ex
@@ -145,18 +143,16 @@ class Tokenizer():
     def _hassymbolsleft(self):
         return self._current_index < len(self._text)
 
-    def _peek(self):
-        if self._hassymbolsleft():
-            return self._text[self._current_index]
-        raise EndOfTextError(self._current_line, self._current_column)
-
     def _next(self):
-        if self._peek() == '\n':
+        if not self._hassymbolsleft():
+            raise EndOfTextError(self._current_line, self._current_column)
+        self._current_index += 1
+        if self._current_symbol == '\n':
             self._current_line   += 1
             self._current_column  = 1
         else:
             self._current_column += 1
-        self._current_index += 1
+        self._current_symbol = self._text[self._current_index:self._current_index + 1].casefold()
 
     def _begintoken(self):
         self._token_start  = self._current_index
@@ -165,7 +161,7 @@ class Tokenizer():
 
     def _skipwhile(self, condition):
         while self._hassymbolsleft():
-            if condition(self._peek()):
+            if condition(self._current_symbol):
                 self._next()
             else:
                 break
@@ -208,29 +204,29 @@ class Tokenizer():
     def _getdice(self):
         return self._extracttoken(TokenType.KW_D)
 
-    def _checkislparenthesis(self, token):
-        return self._consumeifisanyof(token, SYMBOL_LEFT_PARENTHESIS)
+    def _checkislparenthesis(self):
+        return self._consumeifisanyof(SYMBOL_LEFT_PARENTHESIS)
 
-    def _checkisrparenthesis(self, token):
-        return self._consumeifisanyof(token, SYMBOL_RIGHT_PARENTHESIS)
+    def _checkisrparenthesis(self):
+        return self._consumeifisanyof(SYMBOL_RIGHT_PARENTHESIS)
 
-    def _checkisplus(self, token):
-        return self._consumeifisanyof(token, SYMBOL_PLUS)
+    def _checkisplus(self):
+        return self._consumeifisanyof(SYMBOL_PLUS)
 
-    def _checkisminus(self, token):
-        return self._consumeifisanyof(token, SYMBOL_MINUS)
+    def _checkisminus(self):
+        return self._consumeifisanyof(SYMBOL_MINUS)
 
-    def _checkismultiply(self, token):
-        return self._consumeifisanyof(token, SYMBOL_MULTIPLY)
+    def _checkismultiply(self):
+        return self._consumeifisanyof(SYMBOL_MULTIPLY)
 
-    def _checkisdivide(self, token):
-        return self._consumeifisanyof(token, SYMBOL_DIVIDE)
+    def _checkisdivide(self):
+        return self._consumeifisanyof(SYMBOL_DIVIDE)
 
-    def _checkiskeywordd(self, token):
-        return self._consumeifisanyof(token.casefold(), KEYWORD_D)
+    def _checkiskeywordd(self):
+        return self._consumeifisanyof(KEYWORD_D)
 
-    def _consumeifisanyof(self, symbol, *expected_symbols):
-        if not symbol in expected_symbols:
+    def _consumeifisanyof(self, *expected_symbols):
+        if not self._current_symbol in expected_symbols:
             return False
         self._next()
         return True
