@@ -10,34 +10,34 @@ die_tag           = [dD]
 integer = ("0" | [1-9] [0-9]*)
 
 # Grammar
-<roll_expression> ::= <arithmetic>
+<roll_expression> ::= <arithmetic_expression>
 
-<arithmetic> ::= <sum_or_sub>
+<arithmetic_expression> ::= <addition_or_subtraction>
 
-<sum_or_sub>            ::= <prod_or_div> <sum_or_sub_right_hand>
-<sum_or_sub_right_hand> ::= <plus_or_minus> <prod_or_div> <sum_or_sub_right_hand>
-                          | &
+<addition_or_subtraction>            ::= <product_or_division> <addition_or_subtraction_right_hand>
+<addition_or_subtraction_right_hand> ::= <plus_or_minus> <product_or_division> <addition_or_subtraction_right_hand>
+                                       | &
 
-<prod_or_div>            ::= <signaled_value> <prod_or_div_right_hand>
-<prod_or_div_right_hand> ::= <mult_or_div> <signaled_value> <prod_or_div_right_hand>
-                           | &
+<product_or_division>            ::= <signaled_value> <product_or_division_right_hand>
+<product_or_division_right_hand> ::= <multiply_or_divide> <signaled_value> <product_or_division_right_hand>
+                                   | &
 
-<signaled_value> ::= <plus_or_minus> <value>
-                   | <value>
+<signaled_value> ::= <plus_or_minus> <value_expression>
+                   | <value_expression>
 
-<value> ::= <dice_set>
+<value_expression> ::= <dice_set_expression>
 
-<dice_set>            ::= <number> <dice_set_right_hand>
-<dice_set_right_hand> ::= <die>
-                        | &
+<dice_set_expression>            ::= <number_expression> <dice_set_expression_right_hand>
+<dice_set_expression_right_hand> ::= <die_expression>
+                                   | &
 
-<number> ::= left_parenthesis <arithmetic> right_parenthesis
-           | <die>
-           | integer
+<number_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
+                      | <die_expression>
+                      | integer
 
-<die> ::= die_tag <number>
+<die_expression> ::= die_tag <number_expression>
 
-<plus_or_minus> ::= plus
-                  | minus
-<mult_or_div>   ::= multiply
-                  | divide
+<plus_or_minus>      ::= plus
+                       | minus
+<multiply_or_divide> ::= multiply
+                       | divide
