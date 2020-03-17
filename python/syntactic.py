@@ -20,7 +20,7 @@ class Parser():
         self._token     = None
 
     def parse(self, text):
-        self._tokenizer.parse(text)
+        self._tokenizer.set_input_string(text)
         self._nexttoken()
         if self._token.kind == lexic.TokenType.END:
             return True
@@ -45,7 +45,7 @@ class Parser():
         return self._sumorsubrighthandexpr()
 
     def _plusorminusexpr(self):
-        return self._consumeanyof(lexic.TokenType.SB_PLUS, lexic.TokenType.SB_MINUS)
+        return self._consumeanyof(lexic.TokenType.PLUS, lexic.TokenType.MINUS)
 
     def _prodordivexpr(self):
         if self._signaledvalueexpr():
@@ -60,7 +60,7 @@ class Parser():
         return self._prodordivrighthandexpr()
 
     def _multordivexpr(self):
-        return self._consumeanyof(lexic.TokenType.SB_MULTIPLY, lexic.TokenType.SB_DIVIDE)
+        return self._consumeanyof(lexic.TokenType.MULTIPLY, lexic.TokenType.DIVIDE)
 
     def _signaledvalueexpr(self):
         if not self._plusorminusexpr():
@@ -98,10 +98,10 @@ class Parser():
         raise UnexpectedTokenError(self._token)
 
     def _leftparenthesisexpr(self):
-        return self._consumeanyof(lexic.TokenType.SB_LPARENTHESIS)
+        return self._consumeanyof(lexic.TokenType.LEFT_PARENTHESIS)
 
     def _rightparenthesisexpr(self):
-        return self._consumeanyof(lexic.TokenType.SB_RPARENTHESIS)
+        return self._consumeanyof(lexic.TokenType.RIGHT_PARENTHESIS)
 
     def _dieexpr(self):
         if not self._dietagexpr():
@@ -111,7 +111,7 @@ class Parser():
         raise UnexpectedTokenError(self._token)
 
     def _dietagexpr(self):
-        return self._consumeanyof(lexic.TokenType.KW_D)
+        return self._consumeanyof(lexic.TokenType.DIE)
 
     def _integerexpr(self):
         return self._consumeanyof(lexic.TokenType.INTEGER)
@@ -123,7 +123,7 @@ class Parser():
         return True
 
     def _nexttoken(self):
-        self._token = self._tokenizer.fetch()
+        self._token = self._tokenizer.next_token()
 
 if __name__ == '__main__':
     expression = '3 * +1 / 2d6 - 2 + 1dd6 / -(2 + 1)d10 - 5 + +d4d8 * dd3dd12'

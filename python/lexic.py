@@ -1,243 +1,199 @@
-from enum import Enum, auto
+import enum
 
-SYMBOL_LEFT_PARENTHESIS  = '('
+
+SYMBOL_LEFT_PARENTHESIS = '('
 SYMBOL_RIGHT_PARENTHESIS = ')'
-SYMBOL_PLUS              = '+'
-SYMBOL_MINUS             = '-'
-SYMBOL_MULTIPLY          = '*'
-SYMBOL_DIVIDE            = '/'
-KEYWORD_D                = 'd'
+SYMBOL_PLUS = '+'
+SYMBOL_MINUS = '-'
+SYMBOL_MULTIPLY = '*'
+SYMBOL_DIVIDE = '/'
+KEYWORD_DIE = 'd'
 
-class TokenType(Enum):
-    END             = auto()
-    SB_LPARENTHESIS = auto()
-    SB_RPARENTHESIS = auto()
-    SB_PLUS         = auto()
-    SB_MINUS        = auto()
-    SB_MULTIPLY     = auto()
-    SB_DIVIDE       = auto()
-    INTEGER         = auto()
-    KW_D            = auto()
 
-    def isend(self):
-        return self == TokenType.END
+class TokenType(enum.Enum):
+    END = enum.auto()
+    LEFT_PARENTHESIS = enum.auto()
+    RIGHT_PARENTHESIS = enum.auto()
+    PLUS = enum.auto()
+    MINUS = enum.auto()
+    MULTIPLY = enum.auto()
+    DIVIDE = enum.auto()
+    INTEGER = enum.auto()
+    DIE = enum.auto()
 
-    def issymbol(self):
-        if self == TokenType.SB_LPARENTHESIS:
-            return True
-        if self == TokenType.SB_RPARENTHESIS:
-            return True
-        if self == TokenType.SB_PLUS:
-            return True
-        if self == TokenType.SB_MINUS:
-            return True
-        if self == TokenType.SB_MULTIPLY:
-            return True
-        if self == TokenType.SB_DIVIDE:
-            return True
-        return False
-
-    def iskeyword(self):
-        return self == TokenType.KW_D
-    
-    def isliteral(self):
-        return self == TokenType.INTEGER
+    def __repr__(self):
+        return f'<{self.__class__.__name__}.{self.name}>'
 
     def __str__(self):
-        if self == TokenType.END:
-            return 'End'
-        if self == TokenType.SB_LPARENTHESIS:
-            return 'Left Parethesis'
-        if self == TokenType.SB_RPARENTHESIS:
-            return 'Right Parethesis'
-        if self == TokenType.SB_PLUS:
-            return 'Plus'
-        if self == TokenType.SB_MINUS:
-            return 'Minus'
-        if self == TokenType.SB_MULTIPLY:
-            return 'Multiply'
-        if self == TokenType.SB_DIVIDE:
-            return 'Divide'
-        if self == TokenType.KW_D:
-            return 'Dice'
-        if self == TokenType.INTEGER:
-            return 'Integer'
-        return 'None'
+        return self.name
+
 
 class Token():
     def __init__(self, kind, value, line, column):
-        self.kind   = kind
-        self.value  = value
-        self.line   = line
+        self.kind = kind
+        self.value = value
+        self.line = line
         self.column = column
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(kind={self.kind}, value="{self.value}", line={self.line}, column={self.column})'
 
     def __str__(self):
         return str(self.value)
 
+
 class TokenizerError(Exception):
     pass
 
+
 class EndOfTextError(TokenizerError):
     def __init__(self, line, column):
-        self.line   = line
+        self.line = line
         self.column = column
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(line={self.line}, column={self.column})'
 
     def __str__(self):
         return f'The end of the input string was reached at line {self.line}, column {self.column}.'
 
+
 class UnexpectedSymbolError(TokenizerError):
     def __init__(self, symbol, line, column):
         self.symbol = symbol
-        self.line   = line
+        self.line = line
         self.column = column
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}(symbol="{self.symbol}", line={self.line}, column={self.column})'
 
     def __str__(self):
         return f'An unexpected symbol was found at line {self.line}, column {self.column}. Symbol = "{self.symbol}".'
 
+
 class Tokenizer():
-    def __init__(self, text = ''):
-        self.parse(text)
+    def __init__(self, input_string=''):
+        self.set_input_string(input_string)
 
-    def parse(self, text):
-        self._text           = text
-        self._current_symbol = self._text[0:1]
-        self._current_index  = 0
-        self._current_line   = 1
+    def __repr__(self):
+        return f'{self.__class__.__name__}()'
+
+    def set_input_string(self, input_string):
+        self._input_string = input_string
+        self._current_symbol = self._input_string[0:1]
+        self._current_index = 0
+        self._current_line = 1
         self._current_column = 1
-        self._begintoken()
+        self._begin_token()
 
-    def fetch(self):
+    def next_token(self):
         try:
-            self._skipblanks()
-            self._begintoken()
-            if self._checkislparenthesis():
-                return self._getlparenthesis()
-            if self._checkisrparenthesis():
-                return self._getrparenthesis()
-            if self._checkisplus():
-                return self._getplus()
-            if self._checkisminus():
-                return self._getminus()
-            if self._checkismultiply():
-                return self._getmultiply()
-            if self._checkisdivide():
-                return self._getdivide()
-            if self._checkiskeywordd():
-                return self._getdice()
-            if self._current_symbol.isdigit():
-                return self._readinteger()
-            self._unexpectedsymbol()
+            self._skip_blanks()
+            self._begin_token()
+
+            if self._expect_symbol_is_any_of(SYMBOL_LEFT_PARENTHESIS):
+                return self._fetch_token(TokenType.LEFT_PARENTHESIS)
+
+            if self._expect_symbol_is_any_of(SYMBOL_RIGHT_PARENTHESIS):
+                return self._fetch_token(TokenType.RIGHT_PARENTHESIS)
+
+            if self._expect_symbol_is_any_of(SYMBOL_PLUS):
+                return self._fetch_token(TokenType.PLUS)
+
+            if self._expect_symbol_is_any_of(SYMBOL_MINUS):
+                return self._fetch_token(TokenType.MINUS)
+
+            if self._expect_symbol_is_any_of(SYMBOL_MULTIPLY):
+                return self._fetch_token(TokenType.MULTIPLY)
+
+            if self._expect_symbol_is_any_of(SYMBOL_DIVIDE):
+                return self._fetch_token(TokenType.DIVIDE)
+
+            if self._expect_symbol_is_any_of(KEYWORD_DIE):
+                return self._fetch_token(TokenType.DIE)
+
+            if self._expect_symbol_is_any_digit():
+                return self._fetch_integer()
+
+            self._raise_unexpected_symbol_error()
         except EndOfTextError:
-            return self._extracttoken(TokenType.END)
+            return self._fetch_token(TokenType.END)
 
-    def _unexpectedsymbol(self):
-        unknown_symbol_ex = UnexpectedSymbolError(self._current_symbol, self._current_line, self._current_column)
-        self._next      ()
-        self._begintoken()
-        raise unknown_symbol_ex
+    def _raise_unexpected_symbol_error(self):
+        unknown_symbol_error = UnexpectedSymbolError(self._current_symbol, self._current_line, self._current_column)
 
-    def _readinteger(self):
-        self._skipdigits()
-        return self._getinteger()
+        self._next_symbol()
+        self._begin_token()
 
-    def _hassymbolsleft(self):
-        return self._current_index < len(self._text)
+        raise unknown_symbol_error
 
-    def _next(self):
-        if not self._hassymbolsleft():
+    def _fetch_integer(self):
+        self._skip_digits()
+        return self._fetch_token(TokenType.INTEGER)
+
+    def _has_symbols_left(self):
+        return self._current_index < len(self._input_string)
+
+    def _next_symbol(self):
+        if not self._has_symbols_left():
             raise EndOfTextError(self._current_line, self._current_column)
+
         self._current_index += 1
         if self._current_symbol == '\n':
-            self._current_line   += 1
+            self._current_line += 1
             self._current_column  = 1
         else:
             self._current_column += 1
-        self._current_symbol = self._text[self._current_index:self._current_index + 1].casefold()
 
-    def _begintoken(self):
-        self._token_start  = self._current_index
-        self._token_line   = self._current_line
+        self._current_symbol = self._input_string[self._current_index : self._current_index+1].casefold()
+
+    def _begin_token(self):
+        self._token_start = self._current_index
+        self._token_line = self._current_line
         self._token_column = self._current_column
 
-    def _skipwhile(self, condition):
-        while self._hassymbolsleft():
+    def _skip_symbols_while(self, condition):
+        while self._has_symbols_left():
             if condition(self._current_symbol):
-                self._next()
+                self._next_symbol()
             else:
                 break
 
-    def _skipblanks(self):
-        self._skipwhile(lambda x: x.isspace())
+    def _skip_blanks(self):
+        self._skip_symbols_while(lambda x: x.isspace())
 
-    def _skipdigits(self):
-        self._skipwhile(lambda x: x.isdigit())
+    def _skip_digits(self):
+        self._skip_symbols_while(lambda x: x.isdigit())
 
-    def _tokenstring(self):
-        return self._text[self._token_start:self._current_index]
+    def _fetch_token(self, kind):
+        token_value = self._input_string[self._token_start : self._current_index]
+        token = Token(kind, token_value, self._token_line, self._token_column)
 
-    def _extracttoken(self, kind):
-        token = Token(kind, self._tokenstring(), self._token_line, self._token_column)
-        self._begintoken()
+        self._begin_token()
+
         return token
 
-    def _getlparenthesis(self):
-        return self._extracttoken(TokenType.SB_LPARENTHESIS)
+    def _expect_symbol_is_any_of(self, *expected_symbols):
+        return self._expect_symbol_is(lambda symbol: symbol in expected_symbols)
 
-    def _getrparenthesis(self):
-        return self._extracttoken(TokenType.SB_RPARENTHESIS)
+    def _expect_symbol_is_any_digit(self):
+        return self._expect_symbol_is(lambda symbol: symbol.isdigit())
 
-    def _getplus(self):
-        return self._extracttoken(TokenType.SB_PLUS)
-
-    def _getminus(self):
-        return self._extracttoken(TokenType.SB_MINUS)
-
-    def _getmultiply(self):
-        return self._extracttoken(TokenType.SB_MULTIPLY)
-
-    def _getdivide(self):
-        return self._extracttoken(TokenType.SB_DIVIDE)
-
-    def _getinteger(self):
-        return self._extracttoken(TokenType.INTEGER)
-
-    def _getdice(self):
-        return self._extracttoken(TokenType.KW_D)
-
-    def _checkislparenthesis(self):
-        return self._consumeifisanyof(SYMBOL_LEFT_PARENTHESIS)
-
-    def _checkisrparenthesis(self):
-        return self._consumeifisanyof(SYMBOL_RIGHT_PARENTHESIS)
-
-    def _checkisplus(self):
-        return self._consumeifisanyof(SYMBOL_PLUS)
-
-    def _checkisminus(self):
-        return self._consumeifisanyof(SYMBOL_MINUS)
-
-    def _checkismultiply(self):
-        return self._consumeifisanyof(SYMBOL_MULTIPLY)
-
-    def _checkisdivide(self):
-        return self._consumeifisanyof(SYMBOL_DIVIDE)
-
-    def _checkiskeywordd(self):
-        return self._consumeifisanyof(KEYWORD_D)
-
-    def _consumeifisanyof(self, *expected_symbols):
-        if not self._current_symbol in expected_symbols:
+    def _expect_symbol_is(self, condition):
+        if not condition(self._current_symbol):
             return False
-        self._next()
+
+        self._next_symbol()
+
         return True
 
 if __name__ == '__main__':
-    tkr = Tokenizer('2da10 f+ dh6 - 3')
+    tkr = Tokenizer('2d10 + d6 - 3')
     try:
         keep_fetching = True
         while keep_fetching:
-            token = tkr.fetch()
+            token = tkr.next_token()
             print(token)
-            keep_fetching = not token.kind.isend()
+            keep_fetching = token.kind!=TokenType.END
     except TokenizerError as e:
         print(e)
