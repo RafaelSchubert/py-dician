@@ -75,9 +75,6 @@ class Tokenizer():
     def __init__(self, input_string=''):
         self.set_input_string(input_string)
 
-    def __repr__(self):
-        return f'{self.__class__.__name__}()'
-
     def set_input_string(self, input_string):
         self._input_string = input_string
         self._current_symbol = self._input_string[0:1]
