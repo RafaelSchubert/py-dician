@@ -101,7 +101,9 @@ class Parser():
         return False
 
     def _dice_set_expression_right_hand(self):
-        self._die_expression()
+        if self._die_expression():
+            return self._dice_set_expression_right_hand()
+
         return True
 
     def _number_expression(self):
@@ -153,7 +155,7 @@ class Parser():
 
 
 if __name__ == '__main__':
-    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -(2 + 1)d10 - 5 + +d4d8 * dd3dd12'
+    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -(2 + 1)d10 - 5 + +d4d8 * dd3dd12 + d(4 + 2)d6d6'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
