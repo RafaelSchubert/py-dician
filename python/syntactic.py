@@ -14,7 +14,7 @@ class UnexpectedTokenError(ParserError):
         return f'{self.__class__.__name__}(found_token="{self.found_token}", expected_token_type={self.expected_token_type})'
 
     def __str__(self):
-        message = f'An unexpected token was found. Found = {self.found_token}.'
+        message = f'Ln {self.found_token.line}, Col {self.found_token.column}: "{self.found_token}": unexpected token.'
 
         if self.expected_token_type == None:
             return message
@@ -32,10 +32,13 @@ class Parser():
 
         self._next_token()
 
+        if not self._roll_expression():
+            return False
+
         if self._expect_token_is_any_of(lexic.TokenType.END):
             return True
 
-        return self._roll_expression()
+        self._raise_unexpected_token_error(lexic.TokenType.END)
 
     def _roll_expression(self):
         return self._arithmetic_expression()

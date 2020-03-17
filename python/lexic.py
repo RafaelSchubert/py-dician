@@ -55,7 +55,7 @@ class EndOfTextError(TokenizerError):
         return f'{self.__class__.__name__}(line={self.line}, column={self.column})'
 
     def __str__(self):
-        return f'The end of the input string was reached at line {self.line}, column {self.column}.'
+        return f'Ln {self.line}, Col {self.column}: reached the end of the input string.'
 
 
 class UnexpectedSymbolError(TokenizerError):
@@ -68,7 +68,7 @@ class UnexpectedSymbolError(TokenizerError):
         return f'{self.__class__.__name__}(symbol="{self.symbol}", line={self.line}, column={self.column})'
 
     def __str__(self):
-        return f'An unexpected symbol was found at line {self.line}, column {self.column}. Symbol = "{self.symbol}".'
+        return f'Ln {self.line}, Col {self.column}: "{self.symbol}": unexpected symbol.'
 
 
 class Tokenizer():
