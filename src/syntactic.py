@@ -95,7 +95,7 @@ class Parser():
         return self._dice_set_expression()
 
     def _dice_set_expression(self):
-        if self._number_expression():
+        if self._numeric_expression():
             return self._dice_set_expression_right_hand()
 
         return False
@@ -106,7 +106,7 @@ class Parser():
 
         return True
 
-    def _number_expression(self):
+    def _numeric_expression(self):
         if self._parenthesized_expression():
             return True
 
@@ -131,7 +131,7 @@ class Parser():
         if not self._expect_token_is_any_of(lexic.TokenType.DIE):
             return False
 
-        if self._number_expression():
+        if self._numeric_expression():
             return True
 
         self._raise_unexpected_token_error()

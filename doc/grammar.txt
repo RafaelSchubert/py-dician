@@ -27,15 +27,15 @@ integer = ("0" | [1-9] [0-9]*)
 
 <value_expression> ::= <dice_set_expression>
 
-<dice_set_expression>            ::= <number_expression> <dice_set_expression_right_hand>
+<dice_set_expression>            ::= <numeric_expression> <dice_set_expression_right_hand>
 <dice_set_expression_right_hand> ::= <die_expression> <dice_set_expression_right_hand>
                                    | &
 
-<number_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
-                      | <die_expression>
-                      | integer
+<numeric_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
+                       | <die_expression>
+                       | integer
 
-<die_expression> ::= die_tag <number_expression>
+<die_expression> ::= die_tag <numeric_expression>
 
 <plus_or_minus>      ::= plus
                        | minus
