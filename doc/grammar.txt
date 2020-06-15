@@ -18,12 +18,12 @@ integer = ("0" | [1-9] [0-9]*)
 <addition_or_subtraction_right_hand> ::= <plus_or_minus> <product_or_division> <addition_or_subtraction_right_hand>
                                        | &
 
-<product_or_division>            ::= <signaled_value> <product_or_division_right_hand>
-<product_or_division_right_hand> ::= <multiply_or_divide> <signaled_value> <product_or_division_right_hand>
+<product_or_division>            ::= <positive_or_negative> <product_or_division_right_hand>
+<product_or_division_right_hand> ::= <multiply_or_divide> <positive_or_negative> <product_or_division_right_hand>
                                    | &
 
-<signaled_value> ::= <plus_or_minus> <value_expression>
-                   | <value_expression>
+<positive_or_negative> ::= <plus_or_minus> <value_expression>
+                         | <value_expression>
 
 <value_expression> ::= <dice_set_expression>
 

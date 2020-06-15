@@ -65,7 +65,7 @@ class Parser():
         return self._expect_token_is_any_of(lexic.TokenType.PLUS, lexic.TokenType.MINUS)
 
     def _product_or_division(self):
-        if self._signaled_value():
+        if self._positive_or_negative():
             return self._product_or_division_right_hand()
 
         return False
@@ -74,7 +74,7 @@ class Parser():
         if not self._multiply_or_divide():
             return True
 
-        if not self._signaled_value():
+        if not self._positive_or_negative():
             self._raise_unexpected_token_error()
 
         return self._product_or_division_right_hand()
@@ -82,7 +82,7 @@ class Parser():
     def _multiply_or_divide(self):
         return self._expect_token_is_any_of(lexic.TokenType.MULTIPLY, lexic.TokenType.DIVIDE)
 
-    def _signaled_value(self):
+    def _positive_or_negative(self):
         if not self._plus_or_minus():
             return self._value_expression()
 
