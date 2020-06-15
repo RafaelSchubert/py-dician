@@ -10,7 +10,9 @@ die_tag           = [dD]
 integer = ("0" | [1-9] [0-9]*)
 
 # Grammar
-<roll_expression> ::= <arithmetic_expression>
+<roll_expression> ::= <expression>
+
+<expression> ::= <arithmetic_expression>
 
 <arithmetic_expression> ::= <addition_or_subtraction>
 
@@ -31,9 +33,11 @@ integer = ("0" | [1-9] [0-9]*)
 <dice_set_expression_right_hand> ::= <die_expression> <dice_set_expression_right_hand>
                                    | &
 
-<numeric_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
+<numeric_expression> ::= <parenthesized_expression>
                        | <die_expression>
                        | integer
+
+<parenthesized_expression> ::= left_parenthesis <expression> right_parenthesis
 
 <die_expression> ::= die_tag <numeric_expression>
 

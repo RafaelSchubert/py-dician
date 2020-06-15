@@ -41,6 +41,9 @@ class Parser():
         self._raise_unexpected_token_error(lexic.TokenType.END)
 
     def _roll_expression(self):
+        return self._expression()
+
+    def _expression(self):
         return self._arithmetic_expression()
 
     def _arithmetic_expression(self):
@@ -119,7 +122,7 @@ class Parser():
         if not self._expect_token_is_any_of(lexic.TokenType.LEFT_PARENTHESIS):
             return False
 
-        if not self._arithmetic_expression():
+        if not self._expression():
             self._raise_unexpected_token_error()
 
         if self._expect_token_is_any_of(lexic.TokenType.RIGHT_PARENTHESIS):
