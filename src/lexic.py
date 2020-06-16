@@ -183,14 +183,3 @@ class Tokenizer():
         self._next_symbol()
 
         return True
-
-if __name__ == '__main__':
-    tkr = Tokenizer('2d10 + d6 - 3')
-    try:
-        keep_fetching = True
-        while keep_fetching:
-            token = tkr.next_token()
-            print(token)
-            keep_fetching = token.kind!=TokenType.END
-    except TokenizerError as e:
-        print(e)
