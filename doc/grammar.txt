@@ -24,24 +24,30 @@ integer = ("0" | [1-9] [0-9]*)
 <product_or_division_right_hand> ::= <multiply_or_divide> <positive_or_negative> <product_or_division_right_hand>
                                    | &
 
-<positive_or_negative> ::= <plus_or_minus> <value_expression>
-                         | <value_expression>
+<positive_or_negative> ::= <optional_signal> <dice_set_or_value>
 
-<value_expression> ::= <dice_set_expression>
+<optional_signal> ::= <plus_or_minus>
+                    | &
 
-<dice_set_expression>            ::= <numeric_expression> <dice_set_expression_right_hand>
-<dice_set_expression_right_hand> ::= <die_expression> <dice_set_expression_right_hand>
-                                   | &
+<dice_set_or_value> ::= <value> <optional_die>
+                      | <die>
 
-<numeric_expression> ::= <parenthesized_expression>
-                       | <die_expression>
-                       | integer
+<optional_die> ::= <die>
+                 | &
+
+<die> ::= die_tag <value>
+
+<value> ::= <parenthesized_expression>
+          | <literal>
 
 <parenthesized_expression> ::= left_parenthesis <expression> right_parenthesis
 
-<die_expression> ::= die_tag <numeric_expression>
+<literal> ::= <numeric_literal>
 
-<plus_or_minus>      ::= plus
-                       | minus
+<numeric_literal> ::= integer
+
+<plus_or_minus> ::= plus
+                  | minus
+
 <multiply_or_divide> ::= multiply
                        | divide
