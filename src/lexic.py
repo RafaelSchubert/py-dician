@@ -1,16 +1,39 @@
 import enum
 
 
-SYMBOL_LEFT_PARENTHESIS = '('
-SYMBOL_RIGHT_PARENTHESIS = ')'
-SYMBOL_PLUS = '+'
-SYMBOL_MINUS = '-'
-SYMBOL_MULTIPLY = '*'
-SYMBOL_DIVIDE = '/'
-KEYWORD_DIE = 'd'
+class Symbol(str, enum.Enum):
+    '''
+    Base-class enumeration of the symbols of the dice-language.
+    '''
+
+    def __str__(self):
+        return self.value
 
 
-class TokenType(enum.Enum):
+@enum.unique
+class Sign(Symbol):
+    '''
+    Constants enumeration of the signs (single-character symbols) of the dice-language.
+    '''
+
+    LEFT_PARENTHESIS = '('
+    RIGHT_PARENTHESIS = ')'
+    PLUS = '+'
+    MINUS = '-'
+    MULTIPLY = '*'
+    DIVIDE = '/'
+
+
+@enum.unique
+class Keyword(Symbol):
+    '''
+    Constants enumeration of the keywords (reserved identifiers) of the dice-language.
+    '''
+
+    DIE = 'd'
+
+
+class TokenType(enum.IntEnum):
     END = enum.auto()
     LEFT_PARENTHESIS = enum.auto()
     RIGHT_PARENTHESIS = enum.auto()
@@ -20,9 +43,6 @@ class TokenType(enum.Enum):
     DIVIDE = enum.auto()
     INTEGER = enum.auto()
     DIE = enum.auto()
-
-    def __repr__(self):
-        return f'<{self.__class__.__name__}.{self.name}>'
 
     def __str__(self):
         return self.name
@@ -39,7 +59,7 @@ class Token():
         return f'{self.__class__.__name__}(kind={self.kind}, value="{self.value}", line={self.line}, column={self.column})'
 
     def __str__(self):
-        return str(self.value)
+        return self.value
 
 
 class TokenizerError(Exception):
@@ -88,25 +108,25 @@ class Tokenizer():
             self._skip_blanks()
             self._begin_token()
 
-            if self._expect_symbol_is_any_of(SYMBOL_LEFT_PARENTHESIS):
+            if self._expect_symbol_is_any_of(Sign.LEFT_PARENTHESIS):
                 return self._fetch_token(TokenType.LEFT_PARENTHESIS)
 
-            if self._expect_symbol_is_any_of(SYMBOL_RIGHT_PARENTHESIS):
+            if self._expect_symbol_is_any_of(Sign.RIGHT_PARENTHESIS):
                 return self._fetch_token(TokenType.RIGHT_PARENTHESIS)
 
-            if self._expect_symbol_is_any_of(SYMBOL_PLUS):
+            if self._expect_symbol_is_any_of(Sign.PLUS):
                 return self._fetch_token(TokenType.PLUS)
 
-            if self._expect_symbol_is_any_of(SYMBOL_MINUS):
+            if self._expect_symbol_is_any_of(Sign.MINUS):
                 return self._fetch_token(TokenType.MINUS)
 
-            if self._expect_symbol_is_any_of(SYMBOL_MULTIPLY):
+            if self._expect_symbol_is_any_of(Sign.MULTIPLY):
                 return self._fetch_token(TokenType.MULTIPLY)
 
-            if self._expect_symbol_is_any_of(SYMBOL_DIVIDE):
+            if self._expect_symbol_is_any_of(Sign.DIVIDE):
                 return self._fetch_token(TokenType.DIVIDE)
 
-            if self._expect_symbol_is_any_of(KEYWORD_DIE):
+            if self._expect_symbol_is_any_of(Keyword.DIE):
                 return self._fetch_token(TokenType.DIE)
 
             if self._expect_symbol_is_any_digit():
