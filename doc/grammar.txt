@@ -24,10 +24,8 @@ integer = ("0" | [1-9] [0-9]*)
 <product_or_division_right_hand> ::= <multiply_or_divide> <positive_or_negative> <product_or_division_right_hand>
                                    | &
 
-<positive_or_negative> ::= <optional_signal> <dice_set_or_value>
-
-<optional_signal> ::= <plus_or_minus>
-                    | &
+<positive_or_negative> ::= <plus_or_minus> <dice_set_or_value>
+                         | <dice_set_or_value>
 
 <dice_set_or_value> ::= <value> <optional_die>
                       | <die>

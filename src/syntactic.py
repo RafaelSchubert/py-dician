@@ -87,7 +87,27 @@ class Parser():
 
     def _positive_or_negative(self):
         if not self._plus_or_minus():
-            return self._value_expression()
+            return self._dice_set_or_value()
+
+        if self._dice_set_or_value():
+            return True
+
+        self._raise_unexpected_token_error()
+
+    def _dice_set_or_value(self):
+        if self._value_expression():
+            return self._optional_die()
+
+        return self._die_expression()
+
+    def _optional_die(self):
+        self._die_expression()
+
+        return True
+
+    def _die_expression(self):
+        if not self._expect_token_is_any_of(lexic.TokenType.DIE):
+            return False
 
         if self._value_expression():
             return True
@@ -95,28 +115,10 @@ class Parser():
         self._raise_unexpected_token_error()
 
     def _value_expression(self):
-        return self._dice_set_expression()
-
-    def _dice_set_expression(self):
-        if self._numeric_expression():
-            return self._dice_set_expression_right_hand()
-
-        return False
-
-    def _dice_set_expression_right_hand(self):
-        if self._die_expression():
-            return self._dice_set_expression_right_hand()
-
-        return True
-
-    def _numeric_expression(self):
         if self._parenthesized_expression():
             return True
 
-        if self._die_expression():
-            return True
-
-        return self._expect_token_is_any_of(lexic.TokenType.INTEGER)
+        return self._literal_expression()
 
     def _parenthesized_expression(self):
         if not self._expect_token_is_any_of(lexic.TokenType.LEFT_PARENTHESIS):
@@ -130,14 +132,11 @@ class Parser():
 
         self._raise_unexpected_token_error(lexic.TokenType.RIGHT_PARENTHESIS)
 
-    def _die_expression(self):
-        if not self._expect_token_is_any_of(lexic.TokenType.DIE):
-            return False
+    def _literal_expression(self):
+        return self._numeric_literal()
 
-        if self._numeric_expression():
-            return True
-
-        self._raise_unexpected_token_error()
+    def _numeric_literal(self):
+        return self._expect_token_is_any_of(lexic.TokenType.INTEGER)
 
     def _expect_token_is_any_of(self, *expected_token_types):
         return self._expect_token_is(lambda token: token.kind in expected_token_types)
@@ -158,7 +157,7 @@ class Parser():
 
 
 if __name__ == '__main__':
-    expression = '3 * +1 / 2d6 - 2 + 1dd6 / -(2 + 1)d10 - 5 + +d4d8 * dd3dd12 + d(4 + 2)d6d6'
+    expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
