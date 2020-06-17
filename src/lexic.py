@@ -46,8 +46,7 @@ class TokenType(enum.IntEnum):
 
 
 class Token():
-    """
-    Class that represents a token of the dice-language, extracted from a string.
+    """Class that represents a token of the dice-language, extracted from a string.
 
     Parameters:
         kind (TokenType): a member from the TokenType enum representing the token's type.
@@ -76,8 +75,7 @@ class TokenizerError(Exception):
 
 
 class EndOfTextError(TokenizerError):
-    """
-    Exception thrown by the Tokenizer class when the parsing reaches the end of the parsed string.
+    """Exception thrown by the Tokenizer class when the parsing reaches the end of the parsed string.
 
     Parameters:
         line (int): the line at which the string ends.
@@ -96,8 +94,7 @@ class EndOfTextError(TokenizerError):
 
 
 class UnknownSymbolError(TokenizerError):
-    """
-    Exception thrown by the Tokenizer class when it finds a symbol for which there's no defined token type.
+    """Exception thrown by the Tokenizer class when it finds a symbol for which there's no defined token type.
 
     Parameters:
         symbol (str): the unknown symbol that was found.
@@ -118,8 +115,7 @@ class UnknownSymbolError(TokenizerError):
 
 
 class Tokenizer():
-    """
-    Class that parses a string accordingly to the dice-language, fetching each token sequentially.
+    """Class that parses a string accordingly to the dice-language, fetching each token sequentially.
 
     Parameters:
         [optional] input_string (str): the string to be parsed. The default-value is an empty string, i.e. no string to parse.
@@ -129,8 +125,7 @@ class Tokenizer():
         self.set_input_string(input_string)
 
     def set_input_string(self, input_string: str) -> None:
-        """
-        Sets the string to be parsed and resets the parsing.
+        """Sets the string to be parsed and resets the parsing.
 
         Parameters:
             input_string (str): the string to be parsed.
@@ -149,8 +144,7 @@ class Tokenizer():
         self._begin_token()
 
     def next_token(self) -> Token:
-        """
-        Fetches the next token from the parsed string.
+        """Fetches the next token from the parsed string.
 
         Returns:
             A Token object containing the fetched token.
@@ -193,12 +187,7 @@ class Tokenizer():
             return self._fetch_token(TokenType.END)
 
     def _raise_unknown_symbol_error(self) -> None:
-        """
-        Raises an UnknownSymbolError exception for the current symbol.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Raises an UnknownSymbolError exception for the current symbol.
 
         unknown_symbol_error = UnknownSymbolError(self._current_symbol, self._current_line, self._current_column)
 
@@ -208,36 +197,16 @@ class Tokenizer():
         raise unknown_symbol_error
 
     def _fetch_integer(self) -> Token:
-        """
-        Fetches an INTEGER (TokenType) token, starting at the current symbol.
-
-        Returns:
-            A Token object containing the fetched token.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Fetches an INTEGER (TokenType) token, starting at the current symbol.
 
         self._skip_digits()
         return self._fetch_token(TokenType.INTEGER)
 
     def _has_symbols_left(self) -> bool:
-        """
-        Checks if the parsing reached the end of the parsed string.
-
-        Returns:
-            True if the end of the parsed string was reached. False, otherwise.
-        """
-
         return self._current_index < len(self._input_string)
 
     def _next_symbol(self) -> None:
-        """
-        Advances the parsing to next character of the parsed string.
-
-        Raises:
-            EndOfTextError if currently at the end of the parsed string.
-        """
+        # Advances the parsing to next character of the parsed string.
 
         if not self._has_symbols_left():
             raise EndOfTextError(self._current_line, self._current_column)
@@ -252,22 +221,14 @@ class Tokenizer():
         self._current_symbol = self._input_string[self._current_index : self._current_index+1].casefold()
 
     def _begin_token(self) -> None:
-        """Begins a new current token."""
+        # Begins a new current token.
 
         self._token_start = self._current_index
         self._token_line = self._current_line
         self._token_column = self._current_column
 
     def _skip_symbols_while(self, condition: Callable[[str], bool]) -> None:
-        """
-        Skips symbols in the parsed string while they satisfy a given condition.
-
-        Parameters:
-            condition (Callable[[str], bool]): a callable that takes a string as an argument and returns a bool.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Skips symbols in the parsed string while they satisfy a given condition.
 
         while self._has_symbols_left():
             if condition(self._current_symbol):
@@ -276,35 +237,17 @@ class Tokenizer():
                 break
 
     def _skip_blanks(self) -> None:
-        """
-        Skips blanks (symbol.isspace() == True) in the parsed string.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Skips blanks (symbol.isspace() == True) in the parsed string.
 
         self._skip_symbols_while(lambda x: x.isspace())
 
     def _skip_digits(self) -> None:
-        """
-        Skips digits (symbol.isdigit() == True) in the parsed string.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Skips digits (symbol.isdigit() == True) in the parsed string.
 
         self._skip_symbols_while(lambda x: x.isdigit())
 
     def _fetch_token(self, kind: TokenType) -> Token:
-        """
-        Returns the current token and begins a new one.
-
-        Parameters:
-            kind (TokenType): a type to be assigned to the fetched token.
-
-        Returns:
-            A Token object containing the fetched token.
-        """
+        # Returns the current token and begins a new one.
 
         token_value = self._input_string[self._token_start : self._current_index]
         token = Token(kind, token_value, self._token_line, self._token_column)
@@ -314,47 +257,17 @@ class Tokenizer():
         return token
 
     def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[str, ...]) -> bool:
-        """
-        Checks if the current symbol is any of a given set. If it is, advances to the next symbol.
-
-        Parameters:
-            expected_symbols (Tuple[str, ...]): a tuple of strings containing a set of possible symbols.
-
-        Returns:
-            True if the current symbol is any of those in expected_symbols. False, otherwise.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Checks if the current symbol is any of a given set. If it is, advances to the next symbol.
 
         return self._expect_symbol_is(lambda symbol: symbol in expected_symbols)
 
     def _expect_symbol_is_any_digit(self) -> bool:
-        """
-        Checks if the symbol a digit. If it is, advances to the next symbol.
-
-        Returns:
-            True if the current symbol is a digit. False, otherwise.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Checks if the symbol a digit. If it is, advances to the next symbol.
 
         return self._expect_symbol_is(lambda symbol: symbol.isdigit())
 
     def _expect_symbol_is(self, condition: Callable[[str], bool]) -> bool:
-        """
-        Checks if the current symbol satisfies a given condition. If it does, advances to the next symbol.
-
-        Parameters:
-            condition (Callable[[str], bool]): a callable that takes a string as an argument and returns a bool.
-
-        Returns:
-            True if condition() returns True for the current symbol. False, otherwise.
-
-        Raises:
-            EndOfTextError if the parsing reaches the end of the parsed string.
-        """
+        # Checks if the current symbol satisfies a given condition. If it does, advances to the next symbol.
 
         if not condition(self._current_symbol):
             return False
