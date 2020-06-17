@@ -9,8 +9,7 @@ class ParserError(Exception):
 
 
 class UnexpectedTokenError(ParserError):
-    """
-    Exception thrown by the Parser class when a token of an unexpected type is found.
+    """Exception thrown by the Parser class when a token of an unexpected type is found.
 
     Parameters:
         found_token (Token): the token that was found.
@@ -41,8 +40,7 @@ class Parser():
         self._current_token = None
 
     def parse(self, input_string: str) -> bool:
-        """
-        Parses and validates a string accordingly to the dice-language.
+        """Parses and validates a string accordingly to the dice-language.
 
         Parameters:
             input_string (str): the string to be parsed.
@@ -67,21 +65,21 @@ class Parser():
         self._raise_unexpected_token_error(TokenType.END)
 
     def _roll_expression(self) -> bool:
-        return self._expression()
+        # Tries to parse a roll expression, starting at the current token.
 
-    def _expression(self) -> bool:
-        return self._arithmetic_expression()
-
-    def _arithmetic_expression(self) -> bool:
         return self._addition_or_subtraction()
 
     def _addition_or_subtraction(self) -> bool:
+        # Tries to parse an addition or a subtraction, starting at the current token.
+
         if self._product_or_division():
             return self._addition_or_subtraction_right_hand()
 
         return False
 
     def _addition_or_subtraction_right_hand(self) -> bool:
+        # Tries to parse the optional right side of an addition or a subtraction, starting at the current token.
+
         if not self._plus_or_minus():
             return True
 
@@ -91,15 +89,21 @@ class Parser():
         return self._addition_or_subtraction_right_hand()
 
     def _plus_or_minus(self) -> bool:
+        # Tries to parse a plus or a minus sign, starting at the current token.
+
         return self._expect_token_is_any_of(TokenType.PLUS, TokenType.MINUS)
 
     def _product_or_division(self) -> bool:
+        # Tries to parse a multiplication or a division, starting at the current token.
+
         if self._positive_or_negative():
             return self._product_or_division_right_hand()
 
         return False
 
     def _product_or_division_right_hand(self) -> bool:
+        # Tries to parse the optional right side of a multiplication or a division, starting at the current token.
+
         if not self._multiply_or_divide():
             return True
 
@@ -109,9 +113,13 @@ class Parser():
         return self._product_or_division_right_hand()
 
     def _multiply_or_divide(self) -> bool:
+        # Tries to parse a multiplication or a division sign, starting at the current token.
+
         return self._expect_token_is_any_of(TokenType.MULTIPLY, TokenType.DIVIDE)
 
     def _positive_or_negative(self) -> bool:
+        # Tries to parse a positive or a negative value, starting at the current token.
+
         if not self._plus_or_minus():
             return self._dice_set_or_value()
 
@@ -121,17 +129,23 @@ class Parser():
         self._raise_unexpected_token_error()
 
     def _dice_set_or_value(self) -> bool:
+        # Tries to parse a dice set or a value, starting at the current token.
+
         if self._value_expression():
             return self._optional_die()
 
         return self._die_expression()
 
     def _optional_die(self) -> bool:
+        # Tries to parse an optional die definition, starting at the current token.
+
         self._die_expression()
 
         return True
 
     def _die_expression(self) -> bool:
+        # Tries to parse a die definition, starting at the current token.
+
         if not self._expect_token_is_any_of(TokenType.DIE):
             return False
 
@@ -141,16 +155,20 @@ class Parser():
         self._raise_unexpected_token_error()
 
     def _value_expression(self) -> bool:
+        # Tries to parse a value, starting at the current token.
+
         if self._parenthesized_expression():
             return True
 
         return self._literal_expression()
 
     def _parenthesized_expression(self) -> bool:
+        # Tries to parse an expression enclosed by parentheses, starting at the current token.
+
         if not self._expect_token_is_any_of(TokenType.LEFT_PARENTHESIS):
             return False
 
-        if not self._expression():
+        if not self._roll_expression():
             self._raise_unexpected_token_error()
 
         if self._expect_token_is_any_of(TokenType.RIGHT_PARENTHESIS):
@@ -159,15 +177,23 @@ class Parser():
         self._raise_unexpected_token_error(TokenType.RIGHT_PARENTHESIS)
 
     def _literal_expression(self) -> bool:
+        # Tries to parse a literal value expression, starting at the current token.
+
         return self._numeric_literal()
 
     def _numeric_literal(self) -> bool:
+        # Tries to parse a numeric literal value expression, starting at the current token.
+
         return self._expect_token_is_any_of(TokenType.INTEGER)
 
     def _expect_token_is_any_of(self, *expected_token_types: Tuple[TokenType, ...]) -> bool:
+        # Checks if the current token is of any of the given types. If so, advances to next token.
+
         return self._expect_token_is(lambda token: token.kind in expected_token_types)
 
     def _expect_token_is(self, condition: Callable[[Token], bool]) -> bool:
+        # Checks if the current token satisfies a given condition. If so, advances to next token.
+
         if not condition(self._current_token):
             return False
 
