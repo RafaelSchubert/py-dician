@@ -46,19 +46,17 @@ class TokenType(enum.IntEnum):
 
 
 class Token():
-    """Class that represents a token of the dice-language, extracted from a string."""
+    """
+    Class that represents a token of the dice-language, extracted from a string.
+
+    Parameters:
+        kind (TokenType): a member from the TokenType enum representing the token's type.
+        value (str): the value of the token, extracted from the string.
+        line (int): the line at which the token starts.
+        column (int): the position in the line at which the token starts.
+    """
 
     def __init__(self, kind: TokenType, value: str, line: int, column: int):
-        """
-        Builds an object from the token's type, value and position where it was found.
-
-        Parameters:
-            kind (TokenType): a member from the TokenType enum representing the token's type.
-            value (str): the value of the token, extracted from the string.
-            line (int): the line at which the token starts.
-            column (int): the position in the line at which the token starts.
-        """
-
         self.kind = kind
         self.value = value
         self.line = line
@@ -78,17 +76,15 @@ class TokenizerError(Exception):
 
 
 class EndOfTextError(TokenizerError):
-    """Exception thrown by the Tokenizer class when the parsing reaches the end of the parsed string."""
+    """
+    Exception thrown by the Tokenizer class when the parsing reaches the end of the parsed string.
+
+    Parameters:
+        line (int): the line at which the string ends.
+        column (int): the position in the line at which the string ends.
+    """
 
     def __init__(self, line: int, column: int):
-        """
-        Builds an object from the position where the parsed string ends.
-
-        Parameters:
-            line (int): the line at which the string ends.
-            column (int): the position in the line at which the string ends.
-        """
-
         self.line = line
         self.column = column
 
@@ -100,18 +96,16 @@ class EndOfTextError(TokenizerError):
 
 
 class UnknownSymbolError(TokenizerError):
-    """Exception thrown by the Tokenizer class when it finds a symbol for which there's no defined token type."""
+    """
+    Exception thrown by the Tokenizer class when it finds a symbol for which there's no defined token type.
+
+    Parameters:
+        symbol (str): the unknown symbol that was found.
+        line (int): the line where the symbol was found.
+        column (int): the position where the symbol was found in the line.
+    """
 
     def __init__(self, symbol: str, line: int, column: int):
-        """
-        Builds an object from the symbol and the position where it was found.
-
-        Parameters:
-            symbol (str): the unknown symbol that was found.
-            line (int): the line where the symbol was found.
-            column (int): the position where the symbol was found in the line.
-        """
-
         self.symbol = symbol
         self.line = line
         self.column = column
@@ -124,16 +118,14 @@ class UnknownSymbolError(TokenizerError):
 
 
 class Tokenizer():
-    """Class that parses a string accordingly to the dice-language, fetching each token sequentially."""
+    """
+    Class that parses a string accordingly to the dice-language, fetching each token sequentially.
+
+    Parameters:
+        [optional] input_string (str): the string to be parsed. The default-value is an empty string, i.e. no string to parse.
+    """
 
     def __init__(self, input_string: str = ''):
-        """
-        Builds an object and initializes it with a string to be parsed.
-
-        Parameters:
-            input_string (str): the string to be parsed. The default-value is an empty string, i.e. no string to parse.
-        """
-
         self.set_input_string(input_string)
 
     def set_input_string(self, input_string: str) -> None:
@@ -201,7 +193,13 @@ class Tokenizer():
             return self._fetch_token(TokenType.END)
 
     def _raise_unknown_symbol_error(self) -> None:
-        """Raises an UnknownSymbolError exception for the current symbol."""
+        """
+        Raises an UnknownSymbolError exception for the current symbol.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
+        """
+
         unknown_symbol_error = UnknownSymbolError(self._current_symbol, self._current_line, self._current_column)
 
         self._next_symbol()
@@ -215,6 +213,9 @@ class Tokenizer():
 
         Returns:
             A Token object containing the fetched token.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
         """
 
         self._skip_digits()
@@ -263,6 +264,9 @@ class Tokenizer():
 
         Parameters:
             condition (Callable[[str], bool]): a callable that takes a string as an argument and returns a bool.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
         """
 
         while self._has_symbols_left():
@@ -272,12 +276,22 @@ class Tokenizer():
                 break
 
     def _skip_blanks(self) -> None:
-        """Skips blanks (symbol.isspace() == True) in the parsed string."""
+        """
+        Skips blanks (symbol.isspace() == True) in the parsed string.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
+        """
 
         self._skip_symbols_while(lambda x: x.isspace())
 
     def _skip_digits(self) -> None:
-        """Skips digits (symbol.isdigit() == True) in the parsed string."""
+        """
+        Skips digits (symbol.isdigit() == True) in the parsed string.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
+        """
 
         self._skip_symbols_while(lambda x: x.isdigit())
 
@@ -308,6 +322,9 @@ class Tokenizer():
 
         Returns:
             True if the current symbol is any of those in expected_symbols. False, otherwise.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
         """
 
         return self._expect_symbol_is(lambda symbol: symbol in expected_symbols)
@@ -318,6 +335,9 @@ class Tokenizer():
 
         Returns:
             True if the current symbol is a digit. False, otherwise.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
         """
 
         return self._expect_symbol_is(lambda symbol: symbol.isdigit())
@@ -331,6 +351,9 @@ class Tokenizer():
 
         Returns:
             True if condition() returns True for the current symbol. False, otherwise.
+
+        Raises:
+            EndOfTextError if the parsing reaches the end of the parsed string.
         """
 
         if not condition(self._current_symbol):
