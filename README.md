@@ -4,7 +4,7 @@
 
 This one is a little project of mine to practice and get used to working with the Python programming language.
 
-I thought it could be fun to unite something useful (Python) with something which I enjoy (tabletop RPGs). So I decided to make a small, simple dice roll notation language — a _dice-language_ — with a Python interpreter — thus _Py-Dician_.
+I thought it could be fun to unite something useful (Python) with something which I enjoy (tabletop RPGs). So I decided to make a small, simple dice roll notation language — a _dice-language_ — with a Python interpreter — thus _Py-Dician_. As a bonus, I improve my understanding on interpreters and compilers — which are rather interesting, might I add.
 
 ## What is it comprised of?
 
