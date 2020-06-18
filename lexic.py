@@ -1,15 +1,15 @@
 from typing import Callable, Tuple
-import enum
+from enum import auto, Enum, IntEnum, unique
 
 
-class Symbol(str, enum.Enum):
+class Symbol(str, Enum):
     """Base-class enumeration of the symbols of the dice-language."""
 
     def __str__(self) -> str:
         return self.value
 
 
-@enum.unique
+@unique
 class Sign(Symbol):
     """Constants enumeration of the signs (single-character symbols) of the dice-language."""
 
@@ -21,25 +21,25 @@ class Sign(Symbol):
     DIVIDE = '/'
 
 
-@enum.unique
+@unique
 class Keyword(Symbol):
     """Constants enumeration of the keywords (reserved identifiers) of the dice-language."""
 
     DIE = 'd'
 
 
-class TokenType(enum.IntEnum):
+class TokenType(IntEnum):
     """Constants enumeration for the possible types of tokens of the dice-language."""
 
-    END = enum.auto()
-    LEFT_PARENTHESIS = enum.auto()
-    RIGHT_PARENTHESIS = enum.auto()
-    PLUS = enum.auto()
-    MINUS = enum.auto()
-    MULTIPLY = enum.auto()
-    DIVIDE = enum.auto()
-    INTEGER = enum.auto()
-    DIE = enum.auto()
+    END = auto()
+    LEFT_PARENTHESIS = auto()
+    RIGHT_PARENTHESIS = auto()
+    PLUS = auto()
+    MINUS = auto()
+    MULTIPLY = auto()
+    DIVIDE = auto()
+    INTEGER = auto()
+    DIE = auto()
 
     def __str__(self) -> str:
         return self.name
