@@ -1,15 +1,35 @@
-# Definitions
+# Py-Dician's Grammar
+
+## Definitions
+
+Signs, keywords and literals of the language.
+
+```
+# Signs
 left_parenthesis  = "("
 right_parenthesis = ")"
 plus              = "+"
 minus             = "-"
 multiply          = '*'
 divide            = '/'
-die_tag           = [dD]
 
+# Keywords
+die_tag = [dD]
+
+# Literals
 integer = ("0" | [1-9] [0-9]*)
+```
 
-# Grammar
+Only things worthy of note are:
+
+- `die_tag`: used in conjunction with numerical expressions to describe a _dice set_, i.e. one or more dice rolled together;
+- `integer`: describes a non-negative whole number, i.e. a number equal to or greater than 0 (zero).
+
+## Grammar
+
+The predicates and production rules of the language.
+
+```
 <roll_expression> ::= <addition_or_subtraction>
 
 <addition_or_subtraction>            ::= <product_or_division> <addition_or_subtraction_right_hand>
@@ -45,3 +65,4 @@ integer = ("0" | [1-9] [0-9]*)
 
 <multiply_or_divide> ::= multiply
                        | divide
+```

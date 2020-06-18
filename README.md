@@ -10,7 +10,7 @@ I thought it could be fun to unite something useful (Python) with something whic
 
 So far, I've got:
 
-- a **grammar** for the language — which you can read at `./doc/grammar.txt`;
+- a **grammar** for the language — which you can read at `./doc/grammar.md`;
 - a _**lexical module**_ for all the lexical stuff (symbols, keywords and token parsing and representation) in `./lexic.py`;
 - a _**syntactical module**_ for all the syntactical stuff (syntactical parsing and validation) in `./syntactic.py`.
 
