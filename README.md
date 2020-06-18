@@ -10,16 +10,16 @@ I thought it could be fun to unite something useful (Python) with something whic
 
 So far, I've got:
 
-- a **grammar** for the language -- which you can read at `./doc/grammar.txt`;
+- a **grammar** for the language — which you can read at `./doc/grammar.txt`;
 - a _**lexical module**_ for all the lexical stuff (symbols, keywords and token parsing and representation) in `./lexic.py`;
 - a _**syntactical module**_ for all the syntactical stuff (syntactical parsing and validation) in `./syntactic.py`.
 
-## What does it feature?
+## What does the language feature?
 
-- Rolling dice, of course — numbered from 1 through _n_;
-- Defining number of dice and die faces through roll expressions;
+- Describing dice rolls, of course — `mDn` means "roll _m_ dice, each numbered 1 through _n_";
 - Arithmetical operations;
 - Parenthesized expressions;
+- Defining the number of dice and die faces through roll expressions (rolls within rolls within rolls...);
 
 ## What is next?
 
