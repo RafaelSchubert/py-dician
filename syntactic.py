@@ -1,5 +1,5 @@
 from typing import Callable, Tuple
-from error import ErrorCode, ParseError
+from error import ParseError
 from lexic import Token, Tokenizer, TokenType
 
 
@@ -7,12 +7,11 @@ class UnexpectedTokenError(ParseError):
     """Exception thrown by the Parser class when a token of a type unexpected by the syntax is found.
 
     Parameters:
-        code (int): the integer ID of the error.
         found_token (Token): the token that was found.
     """
 
-    def __init__(self, code: int, found_token: Token):
-        super().__init__(code, found_token.line, found_token.column)
+    def __init__(self, found_token: Token):
+        super().__init__(found_token.line, found_token.column)
         self.found_token = found_token
 
 
@@ -189,7 +188,7 @@ class Parser():
         self._current_token = self._tokenizer.next_token()
 
     def _raise_unexpected_token_error(self) -> None:
-        raise UnexpectedTokenError(ErrorCode.E_SYN_UNEXPECTEDTOKEN, self._current_token)
+        raise UnexpectedTokenError(self._current_token)
 
 
 if __name__ == '__main__':

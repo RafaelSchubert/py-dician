@@ -1,6 +1,6 @@
 from typing import Callable, Tuple
 from enum import auto, Enum, IntEnum, unique
-from error import ErrorCode, ParseError
+from error import ParseError
 
 
 class Symbol(str, Enum):
@@ -78,8 +78,7 @@ class EndOfStringError(ParseError):
         column (int): the position in the line at which the string ends.
     """
 
-    def __init__(self, line: int, column: int):
-        super().__init__(ErrorCode.E_ENDOFSTRING, line, column)
+    pass
 
 
 class UnknownSymbolError(ParseError):
@@ -92,7 +91,7 @@ class UnknownSymbolError(ParseError):
     """
 
     def __init__(self, symbol: str, line: int, column: int):
-        super().__init__(ErrorCode.E_LEX_UNKNOWNSYMBOL, line, column)
+        super().__init__(line, column)
         self.symbol = symbol
 
 
