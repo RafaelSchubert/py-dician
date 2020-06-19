@@ -1,35 +1,19 @@
 from typing import Callable, Tuple
-from lexic import Token, Tokenizer, TokenizerError, TokenType
+from error import ErrorCode, ParseError
+from lexic import Token, Tokenizer, TokenType
 
 
-class ParserError(Exception):
-    """Base-class for the Parser class' exceptions."""
-
-    pass
-
-
-class UnexpectedTokenError(ParserError):
-    """Exception thrown by the Parser class when a token of an unexpected type is found.
+class UnexpectedTokenError(ParseError):
+    """Exception thrown by the Parser class when a token of a type unexpected by the syntax is found.
 
     Parameters:
+        code (int): the integer ID of the error.
         found_token (Token): the token that was found.
-        [optional] expected_token_type (TokenType): the token type that was expected to be found instead.
     """
 
-    def __init__(self, found_token: Token, expected_token_type: TokenType = None):
+    def __init__(self, code: int, found_token: Token):
+        super().__init__(code, found_token.line, found_token.column)
         self.found_token = found_token
-        self.expected_token_type = expected_token_type
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(found_token="{self.found_token}", expected_token_type={self.expected_token_type})'
-
-    def __str__(self) -> str:
-        message = f'Ln {self.found_token.line}, Col {self.found_token.column}: "{self.found_token}": unexpected token.'
-
-        if self.expected_token_type == None:
-            return message
-
-        return message + f' Expected = {self.expected_token_type}.'
 
 
 class Parser():
@@ -62,7 +46,7 @@ class Parser():
         if self._expect_token_is_any_of(TokenType.END):
             return True
 
-        self._raise_unexpected_token_error(TokenType.END)
+        self._raise_unexpected_token_error()
 
     def _roll_expression(self) -> bool:
         # Tries to parse a roll expression, starting at the current token.
@@ -174,7 +158,7 @@ class Parser():
         if self._expect_token_is_any_of(TokenType.RIGHT_PARENTHESIS):
             return True
 
-        self._raise_unexpected_token_error(TokenType.RIGHT_PARENTHESIS)
+        self._raise_unexpected_token_error()
 
     def _literal_expression(self) -> bool:
         # Tries to parse a literal value expression, starting at the current token.
@@ -204,8 +188,8 @@ class Parser():
     def _next_token(self) -> None:
         self._current_token = self._tokenizer.next_token()
 
-    def _raise_unexpected_token_error(self, expected_token_type: TokenType = None) -> None:
-        raise UnexpectedTokenError(self._current_token, expected_token_type)
+    def _raise_unexpected_token_error(self) -> None:
+        raise UnexpectedTokenError(ErrorCode.E_SYN_UNEXPECTEDTOKEN, self._current_token)
 
 
 if __name__ == '__main__':
@@ -214,6 +198,6 @@ if __name__ == '__main__':
     print(f'Is "{expression}" a valid roll expression?')
     try:
         print('Yes.' if my_parser.parse(expression) else 'No.')
-    except (TokenizerError, ParserError) as e:
+    except ParseError as e:
         print(f'Nope. Something went wrong!')
         print(f'--> {e}')

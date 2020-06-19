@@ -92,7 +92,7 @@ class UnknownSymbolError(ParseError):
     """
 
     def __init__(self, symbol: str, line: int, column: int):
-        super().__init__(ErrorCode.E_LX_UNKNOWNSYMBOL, line, column)
+        super().__init__(ErrorCode.E_LEX_UNKNOWNSYMBOL, line, column)
         self.symbol = symbol
 
 

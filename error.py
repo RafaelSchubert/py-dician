@@ -31,4 +31,5 @@ class ErrorCode(IntEnum):
     """Constants enumeration for the IDs of errors and warnings that may occur during the parse."""
 
     E_ENDOFSTRING = auto()
-    E_LX_UNKNOWNSYMBOL = auto()
+    E_LEX_UNKNOWNSYMBOL = auto()
+    E_SYN_UNEXPECTEDTOKEN = auto()
