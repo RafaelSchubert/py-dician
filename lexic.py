@@ -1,5 +1,6 @@
 from typing import Callable, Tuple
 from enum import auto, Enum, IntEnum, unique
+from error import ErrorCode, ParseError
 
 
 class Symbol(str, Enum):
@@ -28,6 +29,7 @@ class Keyword(Symbol):
     DIE = 'd'
 
 
+@unique
 class TokenType(IntEnum):
     """Constants enumeration for the possible types of tokens of the dice-language."""
 
@@ -68,14 +70,8 @@ class Token():
         return self.value
 
 
-class TokenizerError(Exception):
-    """Base-class for the Tokenizer class' exceptions."""
-
-    pass
-
-
-class EndOfTextError(TokenizerError):
-    """Exception thrown by the Tokenizer class when the parsing reaches the end of the parsed string.
+class EndOfStringError(ParseError):
+    """Exception thrown by the Tokenizer class when the parse reaches the end of the parsed string.
 
     Parameters:
         line (int): the line at which the string ends.
@@ -83,17 +79,10 @@ class EndOfTextError(TokenizerError):
     """
 
     def __init__(self, line: int, column: int):
-        self.line = line
-        self.column = column
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(line={self.line}, column={self.column})'
-
-    def __str__(self) -> str:
-        return f'Ln {self.line}, Col {self.column}: reached the end of the input string.'
+        super().__init__(ErrorCode.E_ENDOFSTRING, line, column)
 
 
-class UnknownSymbolError(TokenizerError):
+class UnknownSymbolError(ParseError):
     """Exception thrown by the Tokenizer class when it finds a symbol for which there's no defined token type.
 
     Parameters:
@@ -103,15 +92,8 @@ class UnknownSymbolError(TokenizerError):
     """
 
     def __init__(self, symbol: str, line: int, column: int):
+        super().__init__(ErrorCode.E_LX_UNKNOWNSYMBOL, line, column)
         self.symbol = symbol
-        self.line = line
-        self.column = column
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(symbol="{self.symbol}", line={self.line}, column={self.column})'
-
-    def __str__(self) -> str:
-        return f'Ln {self.line}, Col {self.column}: "{self.symbol}": unknown symbol.'
 
 
 class Tokenizer():
@@ -183,7 +165,7 @@ class Tokenizer():
                 return self._fetch_integer()
 
             self._raise_unknown_symbol_error()
-        except EndOfTextError:
+        except EndOfStringError:
             return self._fetch_token(TokenType.END)
 
     def _raise_unknown_symbol_error(self) -> None:
@@ -209,7 +191,7 @@ class Tokenizer():
         # Advances the parsing to next character of the parsed string.
 
         if not self._has_symbols_left():
-            raise EndOfTextError(self._current_line, self._current_column)
+            raise EndOfStringError(self._current_line, self._current_column)
 
         self._current_index += 1
         if self._current_symbol == '\n':

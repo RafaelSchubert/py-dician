@@ -1,3 +1,5 @@
+from enum import auto, IntEnum, unique
+
 class PyDicianError(Exception):
     """Base-class for Py-Dician errors.
 
@@ -23,5 +25,10 @@ class ParseError(PyDicianError):
         self.line = line
         self.column = column
 
-    def __str__(self) -> str:
-        return f'[Error] Ln {self.line}, Col {self.column}: {self.code}'
+
+@unique
+class ErrorCode(IntEnum):
+    """Constants enumeration for the IDs of errors and warnings that may occur during the parse."""
+
+    E_ENDOFSTRING = auto()
+    E_LX_UNKNOWNSYMBOL = auto()
