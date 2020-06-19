@@ -42,4 +42,4 @@ The next steps aim for more practical applications:
 
 ## Suggestions
 
-I would thoroughly appreciate suggestions and reviews on ideas, mistakes and best practices. For that, you may mail me at rafael.schubert.campos@gmail.com.
+I would appreciate suggestions and reviews on ideas, mistakes and best practices. For that, you may mail me at rafael.schubert.campos@gmail.com.
