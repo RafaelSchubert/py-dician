@@ -1,32 +1,6 @@
-from typing import Callable, Tuple
+from typing import Callable, NamedTuple, Tuple
 from enum import auto, Enum, IntEnum, unique
 from error import ParseError
-
-
-class Symbol(str, Enum):
-    """Base-class enumeration of the symbols of the dice-language."""
-
-    def __str__(self) -> str:
-        return self.value
-
-
-@unique
-class Sign(Symbol):
-    """Constants enumeration of the signs (single-character symbols) of the dice-language."""
-
-    LEFT_PARENTHESIS = '('
-    RIGHT_PARENTHESIS = ')'
-    PLUS = '+'
-    MINUS = '-'
-    MULTIPLY = '*'
-    DIVIDE = '/'
-
-
-@unique
-class Keyword(Symbol):
-    """Constants enumeration of the keywords (reserved identifiers) of the dice-language."""
-
-    DIE = 'd'
 
 
 @unique
@@ -47,6 +21,60 @@ class TokenType(IntEnum):
         return self.name
 
 
+class Symbol(Enum):
+    """Base-class enumeration of the symbols of the dice-language.
+
+    Parameters:
+        symbol (str): the symbol per se.
+        token_type (TokenType): the corresponding token type of that symbol.
+    """
+
+    def __init__(self, symbol: str, token_type: TokenType):
+        self.symbol = symbol
+        self.token_type = token_type
+
+    def __str__(self) -> str:
+        return self.symbol
+
+
+@unique
+class Sign(Symbol):
+    """Constants enumeration of the signs (single-character symbols) of the dice-language."""
+
+    LEFT_PARENTHESIS = ('(', TokenType.LEFT_PARENTHESIS)
+    RIGHT_PARENTHESIS = (')', TokenType.RIGHT_PARENTHESIS)
+    PLUS = ('+', TokenType.PLUS)
+    MINUS = ('-', TokenType.MINUS)
+    MULTIPLY = ('*', TokenType.MULTIPLY)
+    DIVIDE = ('/', TokenType.DIVIDE)
+
+
+@unique
+class Keyword(Symbol):
+    """Constants enumeration of the keywords (reserved identifiers) of the dice-language."""
+
+    DIE = ('d', TokenType.DIE)
+
+
+@unique
+class Closure(Enum):
+    """Closures of the dice-language.
+
+    Parameters:
+        begin (Symbol): the symbol that opens the closure.
+        end (Symbol): the symbol that closes the closure.
+    """
+
+    PARENTHESES = (Sign.LEFT_PARENTHESIS, Sign.RIGHT_PARENTHESIS)
+
+    def __init__(self, begin: Symbol, end: Symbol):
+        self.begin = begin
+        self.end = end
+
+    def __str__(self) -> str:
+        return f'("{self.begin.symbol}", "{self.end.symbol}")'
+
+
 class Token():
     """Class that represents a token of the dice-language, extracted from a string.
 
@@ -62,9 +90,6 @@ class Token():
         self.value = value
         self.line = line
         self.column = column
-
-    def __repr__(self) -> str:
-        return f'{self.__class__.__name__}(kind={self.kind.name}, value="{self.value}", line={self.line}, column={self.column})'
 
     def __str__(self) -> str:
         return self.value
@@ -237,10 +262,15 @@ class Tokenizer():
 
         return token
 
-    def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[str, ...]) -> bool:
+    def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[Symbol, ...]) -> bool:
         # Checks if the current symbol is any of a given set. If it is, advances to the next symbol.
 
-        return self._expect_symbol_is(lambda symbol: symbol in expected_symbols)
+        if not any((x.symbol == self._current_symbol for x in expected_symbols)):
+            return False
+
+        self._next_symbol()
+
+        return True
 
     def _expect_symbol_is_any_digit(self) -> bool:
         # Checks if the symbol a digit. If it is, advances to the next symbol.
