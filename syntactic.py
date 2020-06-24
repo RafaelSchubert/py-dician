@@ -231,7 +231,15 @@ class Parser():
         self._current_token = self._tokenizer.next_token()
 
     def _raise_unexpected_token_error(self) -> None:
+        self._check_orphan_closure_end()
+
         raise UnexpectedTokenError(self._current_token)
+
+    def _check_orphan_closure_end(self):
+        closure = next((c for c in Closure if c.end.token_type==self._current_token.kind), None)
+
+        if not closure is None:
+            raise OrphanClosureEndError(closure, self._current_token.line, self._current_token.column)
 
     def _begin_closure(self, closure: Closure) -> bool:
         if not self._expect_token_is_any_of(closure.begin.token_type):
@@ -253,6 +261,7 @@ class Parser():
             if opened_closure != expected_closure:
                 raise OrphanClosureBeginError(opened_closure, current.line, current.column)
         except IndexError:
+            # It seems that, if this one is ever raised, it'll be most likely an error in the parsing process.
             raise OrphanClosureEndError(expected_closure, current.line, current.column)
 
         return True
@@ -260,16 +269,16 @@ class Parser():
 
 if __name__ == '__main__':
     #expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
-    expression = '1 + 1)'
+    expression = '(1 + 1'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
         print('Yes.' if my_parser.parse(expression) else 'No.')
     except UnexpectedTokenError as e:
-        print(f'Ln {e.line}, Col {e.column}: "{e.found_token}": Unexpected token found.')
+        print(f'Ln {e.line}, Col {e.column}: Unexpected token found: "{e.found_token}".')
     except OrphanClosureBeginError as e:
-        print(f'Ln {e.line}, Col {e.column}: "{e.closure.begin}": No matching "{e.closure.end}" was found.')
+        print(f'Ln {e.line}, Col {e.column}: Orphan closure begin: "{e.closure.begin}" - no matching "{e.closure.end}" found.')
     except OrphanClosureEndError as e:
-        print(f'Ln {e.line}, Col {e.column}: "{e.closure.end}": No matching "{e.closure.begin}" was found.')
+        print(f'Ln {e.line}, Col {e.column}: Orphan closure end: "{e.closure.end}" - no matching "{e.closure.begin}" found previously.')
     except ParseError as e:
         print(f'Something went wrong! --> {repr(e)}')
