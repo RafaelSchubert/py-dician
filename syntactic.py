@@ -1,6 +1,6 @@
 from typing import Callable, Tuple
 from error import ParseError
-from lexic import Token, Tokenizer, TokenType
+from lexic import Closure, Token, Tokenizer, TokenType
 
 
 class UnexpectedTokenError(ParseError):
@@ -15,12 +15,49 @@ class UnexpectedTokenError(ParseError):
         self.found_token = found_token
 
 
+class OrphanClosureError(ParseError):
+    """Exception thrown by the Parser class when there's a closure's begin or end with no matching complement.
+
+    Parameters:
+        closure (Closure): the type of closure.
+        line (int): the line at which the error was noticed.
+        column (int): the position in the line at which the error was noticed.
+    """
+
+    def __init__(self, closure: Closure, line: int, column: int):
+        super().__init__(line, column)
+        self.closure = closure
+
+
+class OrphanClosureBeginError(OrphanClosureError):
+    """Exception thrown by the Parser class when there's a closure's begin with no matching end.
+
+    Parameters:
+        closure (Closure): the type of closure that was left open.
+        line (int): the line at which the closure was expected to close.
+        column (int): the position in the line at which the closure was expected to close.
+    """
+
+    pass
+
+
+class OrphanClosureEndError(OrphanClosureError):
+    """Exception thrown by the Parser class when there's a closure's end with no matching begin.
+
+    Parameters:
+        closure (Closure): the type of the unopened closure.
+        line (int): the line at which the closure's end was found.
+        column (int): the position in the line at which the closure's end was found.
+    """
+
+    pass
+
+
 class Parser():
     """Class that parses a string accordingly to the dice-language, checking its syntactical and semantical validity."""
 
     def __init__(self):
         self._tokenizer = Tokenizer()
-        self._current_token = None
 
     def parse(self, input_string: str) -> bool:
         """Parses and validates a string accordingly to the dice-language.
@@ -35,9 +72,7 @@ class Parser():
             UnexpectedTokenError if a token of an unexpected type is found at any moment.
         """
 
-        self._tokenizer.set_input_string(input_string)
-
-        self._next_token()
+        self._ready(input_string)
 
         if not self._roll_expression():
             return False
@@ -46,6 +81,14 @@ class Parser():
             return True
 
         self._raise_unexpected_token_error()
+
+    def _ready(self, input_string: str) -> None:
+        self._tokenizer.set_input_string(input_string)
+        self._reset_diagnostic()
+        self._next_token()
+
+    def _reset_diagnostic(self) -> None:
+        self._closure_stack = []
 
     def _roll_expression(self) -> bool:
         # Tries to parse a roll expression, starting at the current token.
@@ -148,13 +191,13 @@ class Parser():
     def _parenthesized_expression(self) -> bool:
         # Tries to parse an expression enclosed by parentheses, starting at the current token.
 
-        if not self._expect_token_is_any_of(TokenType.LEFT_PARENTHESIS):
+        if not self._begin_closure(Closure.PARENTHESES):
             return False
 
         if not self._roll_expression():
             self._raise_unexpected_token_error()
 
-        if self._expect_token_is_any_of(TokenType.RIGHT_PARENTHESIS):
+        if self._end_closure(Closure.PARENTHESES):
             return True
 
         self._raise_unexpected_token_error()
@@ -190,13 +233,43 @@ class Parser():
     def _raise_unexpected_token_error(self) -> None:
         raise UnexpectedTokenError(self._current_token)
 
+    def _begin_closure(self, closure: Closure) -> bool:
+        if not self._expect_token_is_any_of(closure.begin.token_type):
+            return False
+
+        self._closure_stack.append(closure)
+
+        return True
+
+    def _end_closure(self, expected_closure: Closure) -> bool:
+        current = self._current_token
+
+        if not self._expect_token_is_any_of(expected_closure.end.token_type):
+            return False
+
+        try:
+            opened_closure = self._closure_stack.pop()
+
+            if opened_closure != expected_closure:
+                raise OrphanClosureBeginError(opened_closure, current.line, current.column)
+        except IndexError:
+            raise OrphanClosureEndError(expected_closure, current.line, current.column)
+
+        return True
+
 
 if __name__ == '__main__':
-    expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
+    #expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
+    expression = '1 + 1)'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
         print('Yes.' if my_parser.parse(expression) else 'No.')
+    except UnexpectedTokenError as e:
+        print(f'Ln {e.line}, Col {e.column}: "{e.found_token}": Unexpected token found.')
+    except OrphanClosureBeginError as e:
+        print(f'Ln {e.line}, Col {e.column}: "{e.closure.begin}": No matching "{e.closure.end}" was found.')
+    except OrphanClosureEndError as e:
+        print(f'Ln {e.line}, Col {e.column}: "{e.closure.end}": No matching "{e.closure.begin}" was found.')
     except ParseError as e:
-        print(f'Nope. Something went wrong!')
-        print(f'--> {e}')
+        print(f'Something went wrong! --> {repr(e)}')

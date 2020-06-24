@@ -92,7 +92,7 @@ class Token():
         self.column = column
 
     def __str__(self) -> str:
-        return self.value
+        return '[End of String]' if self.kind is TokenType.END else self.value
 
 
 class EndOfStringError(ParseError):
