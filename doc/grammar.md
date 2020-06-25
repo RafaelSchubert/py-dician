@@ -30,39 +30,33 @@ Only things worthy of note are:
 The predicates and production rules of the language.
 
 ```
-<roll_expression> ::= <addition_or_subtraction>
+<roll_expression> ::= <arithmetic_expression>
 
-<addition_or_subtraction>            ::= <product_or_division> <addition_or_subtraction_right_hand>
-<addition_or_subtraction_right_hand> ::= <plus_or_minus> <product_or_division> <addition_or_subtraction_right_hand>
-                                       | &
+<arithmetic_expression>            ::= <term> <arithmetic_expression_right_hand>
+<arithmetic_expression_right_hand> ::= <plus_or_minus> <term> <arithmetic_expression_right_hand>
+                                     | &
 
-<product_or_division>            ::= <positive_or_negative> <product_or_division_right_hand>
-<product_or_division_right_hand> ::= <multiply_or_divide> <positive_or_negative> <product_or_division_right_hand>
-                                   | &
+<term>            ::= <factor> <term_right_hand>
+<term_right_hand> ::= <multiply_or_divide> <factor> <term_right_hand>
+                    | &
 
-<positive_or_negative> ::= <plus_or_minus> <dice_set_or_value>
-                         | <dice_set_or_value>
+<factor> ::= <plus_or_minus> <dice_set>
+           | <dice_set>
 
-<dice_set_or_value> ::= <value> <optional_die>
-                      | <die>
+<dice_set> ::= <value> <optional_die>
+             | <die>
 
+<die>          ::= die_tag <value>
 <optional_die> ::= <die>
                  | &
 
-<die> ::= die_tag <value>
-
 <value> ::= <parenthesized_expression>
-          | <literal>
+          | <literal_expression>
 
-<parenthesized_expression> ::= left_parenthesis <roll_expression> right_parenthesis
+<parenthesized_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
 
-<literal> ::= <numeric_literal>
+<literal_expression> ::= integer
 
-<numeric_literal> ::= integer
-
-<plus_or_minus> ::= plus
-                  | minus
-
-<multiply_or_divide> ::= multiply
-                       | divide
+<plus_or_minus>      ::= plus | minus
+<multiply_or_divide> ::= multiply | divide
 ```
