@@ -1,22 +1,38 @@
 # Py-Dician's Grammar
 
-## Definitions
+## 1) Definitions
 
-Signs, keywords and literals of the language.
+The Py-Dician language uses a few symbols to denote its values, operations and concepts. Those symbols are divided into three categories:
+- signs;
+- keywords;
+- and literals.
+
+### 1.1) Signs
+
+Signs are symbols composed of a single non-alphanumeric character. They represent delimiters and operators, such as mathematical symbols.
 
 ```
-# Signs
 left_parenthesis  = "("
 right_parenthesis = ")"
 plus              = "+"
 minus             = "-"
 multiply          = '*'
 divide            = '/'
+```
 
-# Keywords
+### 1.2) Keywords
+
+Keywords are symbols composed of one or more alphanumeric characters — _words_, that is. They represent more complex operations and constructs or concepts. Those words are reserved for the language.
+
+```
 die_tag = [dD]
+```
 
-# Literals
+### 1.3) Literals
+
+Literals represent values that are expressed in an explicit manner, such as whole numbers.
+
+```
 integer = ("0" | [1-9] [0-9]*)
 ```
 
@@ -25,7 +41,7 @@ Only things worthy of note are:
 - `die_tag`: used in conjunction with numerical expressions to describe a _dice set_, i.e. one or more dice rolled together;
 - `integer`: describes a non-negative whole number, i.e. a number equal to or greater than 0 (zero).
 
-## Grammar
+## 2) Grammar
 
 The predicates and production rules of the language.
 
