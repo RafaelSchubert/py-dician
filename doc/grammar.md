@@ -75,7 +75,9 @@ Predicates:
     <plus_or_minus> ::= plus | minus
 ```
 
-### 2.1) Predicates
+### 2.1) Specification
+
+The Py-Dician language is specified by the following set of predicates, starting at `roll_expression`:
 
 ```
 <roll_expression> ::= <math_expression>
@@ -83,25 +85,19 @@ Predicates:
 <math_expression> ::= <add_or_subtract>
 
 <add_or_subtract>            ::= <multiply_or_divide> <add_or_subtract_right_hand>
-<add_or_subtract_right_hand> ::= <plus_or_minus> <multiply_or_divide> <add_or_subtract_right_hand>
-                               | &
+<add_or_subtract_right_hand> ::= <plus_or_minus> <multiply_or_divide> <add_or_subtract_right_hand> | &
 
 <multiply_or_divide>            ::= <positive_or_negative> <multiply_or_divide_right_hand>
-<multiply_or_divide_right_hand> ::= <multiply_or_divide> <positive_or_negative> <multiply_or_divide_right_hand>
-                                  | &
+<multiply_or_divide_right_hand> ::= <multiply_or_divide> <positive_or_negative> <multiply_or_divide_right_hand> | &
 
-<positive_or_negative> ::= <plus_or_minus> <dice_set>
-                         | <dice_set>
+<positive_or_negative> ::= <plus_or_minus> <dice_set> | <dice_set>
 
-<dice_set>     ::= <value> <optional_die>
-                 | <die>
-<optional_die> ::= <die>
-                 | &
+<dice_set>     ::= <value> <optional_die> | <die>
+<optional_die> ::= <die> | &
 
 <die> ::= die_tag <value>
 
-<value> ::= <literal>
-          | <parenthesized_expression>
+<value> ::= <literal> | <parenthesized_expression>
 
 <literal> ::= integer
 
