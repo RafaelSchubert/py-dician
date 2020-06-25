@@ -16,7 +16,7 @@ class UnexpectedTokenError(ParseError):
 
 
 class ClosureError(ParseError):
-    """Exception thrown by the Parser class when a closure-related error happens.
+    """Exception thrown by the Parser class when an error related to an enclosed expression happens.
 
     Parameters:
         closure (Closure): the type of closure.
@@ -30,12 +30,12 @@ class ClosureError(ParseError):
 
 
 class OrphanClosureBeginError(ClosureError):
-    """Exception thrown by the Parser class when there's a closure's begin with no matching end.
+    """Exception thrown by the Parser class when there's an enclosed expression left open.
 
     Parameters:
         closure (Closure): the type of closure that was left open.
-        line (int): the line at which the closure was expected to close.
-        column (int): the position in the line at which the closure was expected to close.
+        line (int): the line at which the enclosed expression begins.
+        column (int): the position in the line at which the enclosed expression begins.
     """
 
     pass
@@ -54,6 +54,14 @@ class OrphanClosureEndError(ClosureError):
 
 
 class IncompleteEnclosedExpression(ClosureError):
+    """Exception thrown by the Parser class when there's an incomplete enclosed expression.
+
+    Parameters:
+        closure (Closure): the type of closure.
+        line (int): the line at which the enclosed expression begins.
+        column (int): the position in the line at which the enclosed expression begins.
+    """
+
     pass
 
 
@@ -244,10 +252,12 @@ class Parser():
         raise UnexpectedTokenError(self._current_token)
 
     def _begin_closure(self, closure: Closure) -> bool:
+        current = self._current_token
+
         if not self._expect_token_is_any_of(closure.begin.token_type):
             return False
 
-        self._closure_stack.append(closure)
+        self._closure_stack.append((closure, current))
 
         return True
 
@@ -260,8 +270,8 @@ class Parser():
         try:
             opened_closure = self._closure_stack.pop()
 
-            if opened_closure != expected_closure:
-                raise OrphanClosureBeginError(opened_closure, current.line, current.column)
+            if opened_closure[0] != expected_closure:
+                raise OrphanClosureBeginError(opened_closure[0], opened_closure[1].line, opened_closure[1].column)
         except IndexError:
             # It seems that, if this one is ever raised, it'll be most likely an error in the parsing process.
             raise OrphanClosureEndError(expected_closure, current.line, current.column)
@@ -272,7 +282,7 @@ class Parser():
         try:
             orphan_closure = self._closure_stack.pop()
 
-            raise OrphanClosureBeginError(orphan_closure, self._current_token.line, self._current_token.column)
+            raise OrphanClosureBeginError(orphan_closure[0], orphan_closure[1].line, orphan_closure[1].column)
         except IndexError:
             pass
 
@@ -285,8 +295,8 @@ class Parser():
         try:
             opened_closure = self._closure_stack.pop()
 
-            if opened_closure is ended_closure:
-                raise IncompleteEnclosedExpression(ended_closure, self._current_token.line, self._current_token.column)
+            if opened_closure[0] is ended_closure:
+                raise IncompleteEnclosedExpression(opened_closure[0], opened_closure[1].line, opened_closure[1].column)
 
             self._closure_stack.append(opened_closure)
         except IndexError:
@@ -294,8 +304,7 @@ class Parser():
 
 
 if __name__ == '__main__':
-    # expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
-    expression = '(1 + )'
+    expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
