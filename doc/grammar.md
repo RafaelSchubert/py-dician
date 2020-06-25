@@ -11,7 +11,7 @@ The definitions are given in terms of regular expressions.
 
 ### 1.1) Signs
 
-Signs are symbols composed of a single non-alphanumeric character. They represent delimiters and operators, such as mathematical symbols.
+Signs are symbols made up of a single non-alphanumeric character. They represent delimiters and operators, such as mathematical symbols.
 
 ```
 left_parenthesis  = (
@@ -24,7 +24,7 @@ divide            = /
 
 ### 1.2) Keywords
 
-Keywords are symbols composed of one or more alphanumeric characters — _words_, that is. They represent more complex operations and constructs or concepts. Those words are reserved for the language.
+Keywords are symbols made up of one or more alphanumeric characters — that is, _words_. They represent more complex operations and constructs or concepts. These words are reserved for use of the language.
 
 ```
 die_tag = [dD]
@@ -35,23 +35,44 @@ die_tag = [dD]
 Literals represent values that are expressed in an explicit manner, such as whole numbers.
 
 ```
-integer = (0 | [1-9] [0-9]*)
+integer = (0|[1-9][0-9]*)
 ```
 
 ## 2) Grammar
 
-The language per se is described by _predicates_: rules that dictate the way the symbols are coherently arranged. A predicate specifies a syntactical component of the language, providing the sequences of symbols that are understood by the language.
+The language itself is described by _predicates_ that specify the syntactic components of the language, providing the rules for its expressions. These rules dictate the ways the symbols might be coherently arranged and therefore understood by the language. Think of these rules as the ways in which you can arrange words to formulate sentences in your language.
 
-Each predicate is described as follows:
-
-```
-<name_of_the_predicate> ::= rule
-```
-
-Or:
+Each predicate is described as:
 
 ```
-<name_of_the_predicate> ::= first rule | second rule | ... | n-th rule
+<name of the predicate> ::= rules
+```
+
+With `rules` being specified by one or more options separated by `|`.
+
+```
+first option | second option | ... | n-th option
+```
+
+Each of these options consists of a sequence of symbols and predicates, or the character `&`, indicating that the predicate is optional.
+
+A complete set of predicates might look like this:
+
+```
+Definitions:
+    plus    = +
+    minus   = -
+    integer = (0|[1-9][0-9]*)
+
+Predicates:
+    <evaluable_expression> ::= <sum_or_subtraction>
+
+    <sum_or_subtraction>            ::= <value> <sum_or_subtraction_right_hand>
+    <sum_or_subtraction_right_hand> ::= <plus_or_minus> <value> <sum_or_subtraction_right_hand> | &
+
+    <value> ::= integer
+
+    <plus_or_minus> ::= plus | minus
 ```
 
 ### 2.1) Predicates
