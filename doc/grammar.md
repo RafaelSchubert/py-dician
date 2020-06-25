@@ -7,17 +7,19 @@ The Py-Dician language uses a few symbols to denote its values, operations and c
 - keywords;
 - and literals.
 
+The definitions are given in terms of regular expressions.
+
 ### 1.1) Signs
 
 Signs are symbols composed of a single non-alphanumeric character. They represent delimiters and operators, such as mathematical symbols.
 
 ```
-left_parenthesis  = "("
-right_parenthesis = ")"
-plus              = "+"
-minus             = "-"
-multiply          = '*'
-divide            = '/'
+left_parenthesis  = (
+right_parenthesis = )
+plus              = +
+minus             = -
+multiply          = *
+divide            = /
 ```
 
 ### 1.2) Keywords
@@ -33,17 +35,26 @@ die_tag = [dD]
 Literals represent values that are expressed in an explicit manner, such as whole numbers.
 
 ```
-integer = ("0" | [1-9] [0-9]*)
+integer = (0 | [1-9] [0-9]*)
 ```
-
-Only things worthy of note are:
-
-- `die_tag`: used in conjunction with numerical expressions to describe a _dice set_, i.e. one or more dice rolled together;
-- `integer`: describes a non-negative whole number, i.e. a number equal to or greater than 0 (zero).
 
 ## 2) Grammar
 
-The predicates and production rules of the language.
+The language per se is described by _predicates_: rules that dictate the way the symbols are coherently arranged. A predicate specifies a syntactical component of the language, providing the sequences of symbols that are understood by the language.
+
+Each predicate is described as follows:
+
+```
+<name_of_the_predicate> ::= rule
+```
+
+Or:
+
+```
+<name_of_the_predicate> ::= first rule | second rule | ... | n-th rule
+```
+
+### 2.1) Predicates
 
 ```
 <roll_expression> ::= <math_expression>
