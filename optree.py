@@ -2,28 +2,53 @@ from random import randint
 
 
 class Operation:
+    """Base-class for the runnable operations which the Py-Dician expressions are translated to."""
+
     def run(self):
+        """Executes this operation.
+
+        Must be overridden.
+
+        Returns:
+            The result of the operation.
+        """
+
         return NotImplementedError
 
 
-class ParamlessOp(Operation):
+class SimpleOp(Operation):
+    """Base-class for operations that take no operands, such as literals."""
+
     pass
 
 
 class UnaryOp(Operation):
+    """Base-class for operations that take a single operand.
+
+    Parameters:
+        operand (Operation): the single operand of this operation.
+    """
+
     def __init__(self, operand: Operation):
         super().__init__()
         self._operand = operand
 
 
 class BinaryOp(Operation):
+    """Base-class for operations that take exactly two operands, a left and a right one.
+
+    Parameters:
+        left_operand (Operation): the left operand of this operation.
+        right_operand (Operation): the right operand of this operation.
+    """
+
     def __init__(self, left_operand: Operation, right_operand: Operation):
         super().__init__()
         self._left_operand = left_operand
         self._right_operand = right_operand
 
 
-class LiteralValueOp(ParamlessOp):
+class LiteralValueOp(SimpleOp):
     def __init__(self, value):
         super().__init__()
         self._value = value
