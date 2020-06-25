@@ -53,7 +53,7 @@ class OrphanClosureEndError(ClosureError):
     pass
 
 
-class IncompleteEnclosedExpression(ClosureError):
+class IncompleteEnclosedExpressionError(ClosureError):
     """Exception thrown by the Parser class when there's an incomplete enclosed expression.
 
     Parameters:
@@ -241,16 +241,6 @@ class Parser():
     def _next_token(self) -> None:
         self._current_token = self._tokenizer.next_token()
 
-    def _handle_unexpected_token(self) -> None:
-        if self._current_token.kind is TokenType.END:
-            self._check_orphan_closure_begin()
-
-            raise EndOfStringError(self._current_token.line, self._current_token.column)
-
-        self._check_incomplete_enclosed_expression()
-
-        raise UnexpectedTokenError(self._current_token)
-
     def _begin_closure(self, closure: Closure) -> bool:
         current = self._current_token
 
@@ -278,6 +268,16 @@ class Parser():
 
         return True
 
+    def _handle_unexpected_token(self) -> None:
+        if self._current_token.kind is TokenType.END:
+            self._check_orphan_closure_begin()
+
+            raise EndOfStringError(self._current_token.line, self._current_token.column)
+
+        self._check_incomplete_enclosed_expression()
+
+        raise UnexpectedTokenError(self._current_token)
+
     def _check_orphan_closure_begin(self) -> None:
         try:
             orphan_closure = self._closure_stack.pop()
@@ -296,7 +296,7 @@ class Parser():
             opened_closure = self._closure_stack.pop()
 
             if opened_closure[0] is ended_closure:
-                raise IncompleteEnclosedExpression(opened_closure[0], opened_closure[1].line, opened_closure[1].column)
+                raise IncompleteEnclosedExpressionError(opened_closure[0], opened_closure[1].line, opened_closure[1].column)
 
             self._closure_stack.append(opened_closure)
         except IndexError:
@@ -317,7 +317,7 @@ if __name__ == '__main__':
         print(f'Ln {e.line}, Col {e.column}: Orphan closure begin: "{e.closure.begin}" - no matching "{e.closure.end}" found.')
     except OrphanClosureEndError as e:
         print(f'Ln {e.line}, Col {e.column}: Orphan closure end: "{e.closure.end}" - no matching "{e.closure.begin}" found previously.')
-    except IncompleteEnclosedExpression as e:
+    except IncompleteEnclosedExpressionError as e:
         print(f'Ln {e.line}, Col {e.column}: Incomplete enclosed expression: the expression enclosed by "{e.closure.begin} {e.closure.end}" is possibly incomplete.')
     except ParseError as e:
         print(f'Something went wrong! --> {repr(e)}')
