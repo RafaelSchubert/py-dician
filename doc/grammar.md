@@ -30,32 +30,34 @@ Only things worthy of note are:
 The predicates and production rules of the language.
 
 ```
-<roll_expression> ::= <arithmetic_expression>
+<roll_expression> ::= <math_expression>
 
-<arithmetic_expression>            ::= <term> <arithmetic_expression_right_hand>
-<arithmetic_expression_right_hand> ::= <plus_or_minus> <term> <arithmetic_expression_right_hand>
-                                     | &
+<math_expression> ::= <add_or_subtract>
 
-<term>            ::= <factor> <term_right_hand>
-<term_right_hand> ::= <multiply_or_divide> <factor> <term_right_hand>
-                    | &
+<add_or_subtract>            ::= <multiply_or_divide> <add_or_subtract_right_hand>
+<add_or_subtract_right_hand> ::= <plus_or_minus> <multiply_or_divide> <add_or_subtract_right_hand>
+                               | &
 
-<factor> ::= <plus_or_minus> <dice_set>
-           | <dice_set>
+<multiply_or_divide>            ::= <positive_or_negative> <multiply_or_divide_right_hand>
+<multiply_or_divide_right_hand> ::= <multiply_or_divide> <positive_or_negative> <multiply_or_divide_right_hand>
+                                  | &
 
-<dice_set> ::= <value> <optional_die>
-             | <die>
+<positive_or_negative> ::= <plus_or_minus> <dice_set>
+                         | <dice_set>
 
-<die>          ::= die_tag <value>
+<dice_set>     ::= <value> <optional_die>
+                 | <die>
 <optional_die> ::= <die>
                  | &
 
-<value> ::= <parenthesized_expression>
-          | <literal_expression>
+<die> ::= die_tag <value>
 
-<parenthesized_expression> ::= left_parenthesis <arithmetic_expression> right_parenthesis
+<value> ::= <literal>
+          | <parenthesized_expression>
 
-<literal_expression> ::= integer
+<literal> ::= integer
+
+<parenthesized_expression> ::= left_parenthesis <math_expression> right_parenthesis
 
 <plus_or_minus>      ::= plus | minus
 <multiply_or_divide> ::= multiply | divide
