@@ -1,7 +1,7 @@
 from typing import Callable, Tuple
 from error import ParseError
 from lexic import Closure, EndOfStringError, Token, Tokenizer, TokenType
-from optree import DiceRollOp, DieOp, DivideOp, LiteralValueOp, MultiplyOp, NegateOp, Operation
+from optree import DiceRollOp, DieOp, DivideOp, LiteralValueOp, MultiplyOp, NegateOp, Operation, SubtractOp, SumOp
 
 
 class UnexpectedTokenError(ParseError):
@@ -102,34 +102,44 @@ class Parser():
     def _reset_diagnostic(self) -> None:
         self._closure_stack = []
 
-    def _roll_expression(self) -> bool:
+    def _roll_expression(self) -> Operation:
         # Tries to parse a roll expression, starting at the current token.
 
         return self._addition_or_subtraction()
 
-    def _addition_or_subtraction(self) -> bool:
+    def _addition_or_subtraction(self) -> Operation:
         # Tries to parse an addition or a subtraction, starting at the current token.
 
-        if self._product_or_division():
-            return self._addition_or_subtraction_right_hand()
+        left_operand = self._product_or_division()
 
-        return False
+        if left_operand is None:
+            return None
 
-    def _addition_or_subtraction_right_hand(self) -> bool:
+        return self._addition_or_subtraction_right_hand(left_operand)
+
+    def _addition_or_subtraction_right_hand(self, left_operand: Operation) -> Operation:
         # Tries to parse the optional right side of an addition or a subtraction, starting at the current token.
 
-        if not self._plus_or_minus():
-            return True
+        op_token_type = self._current_token.kind
 
-        if not self._product_or_division():
+        if not op_token_type is (TokenType.PLUS, TokenType.MINUS):
+            return left_operand
+
+        self._next_token()
+
+        right_operand = self._product_or_division()
+
+        if right_operand is None:
             self._handle_unexpected_token()
 
-        return self._addition_or_subtraction_right_hand()
+        operation = None
 
-    def _plus_or_minus(self) -> bool:
-        # Tries to parse a plus or a minus sign, starting at the current token.
+        if op_token_type is TokenType.PLUS:
+            operation = SumOp(left_operand, right_operand)
+        else:
+            operation = SubtractOp(left_operand, right_operand)
 
-        return self._expect_token_is_any_of(TokenType.PLUS, TokenType.MINUS)
+        return self._addition_or_subtraction_right_hand(operation)
 
     def _product_or_division(self) -> Operation:
         # Tries to parse a multiplication or a division, starting at the current token.
@@ -164,11 +174,6 @@ class Parser():
             operation = DivideOp(left_operand, right_operand)
 
         return self._product_or_division_right_hand(operation)
-
-    def _multiply_or_divide(self) -> bool:
-        # Tries to parse a multiplication or a division sign, starting at the current token.
-
-        return self._expect_token_is_any_of(TokenType.MULTIPLY, TokenType.DIVIDE)
 
     def _positive_or_negative(self) -> Operation:
         # Tries to parse a positive or a negative value, starting at the current token.
