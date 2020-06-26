@@ -1,7 +1,7 @@
 from typing import Callable, Tuple
 from error import ParseError
 from lexic import Closure, EndOfStringError, Token, Tokenizer, TokenType
-from optree import DiceRollOp, DieOp, LiteralValueOp, NegateOp, Operation
+from optree import DiceRollOp, DieOp, DivideOp, LiteralValueOp, MultiplyOp, NegateOp, Operation
 
 
 class UnexpectedTokenError(ParseError):
@@ -131,24 +131,39 @@ class Parser():
 
         return self._expect_token_is_any_of(TokenType.PLUS, TokenType.MINUS)
 
-    def _product_or_division(self) -> bool:
+    def _product_or_division(self) -> Operation:
         # Tries to parse a multiplication or a division, starting at the current token.
 
-        if self._positive_or_negative():
-            return self._product_or_division_right_hand()
+        left_operand = self._positive_or_negative()
 
-        return False
+        if left_operand is None:
+            return None
 
-    def _product_or_division_right_hand(self) -> bool:
+        return self._product_or_division_right_hand(left_operand)
+
+    def _product_or_division_right_hand(self, left_operand: Operation) -> Operation:
         # Tries to parse the optional right side of a multiplication or a division, starting at the current token.
 
-        if not self._multiply_or_divide():
-            return True
+        op_token_type = self._current_token.kind
 
-        if not self._positive_or_negative():
+        if not op_token_type in (TokenType.MULTIPLY, TokenType.DIVIDE):
+            return left_operand
+
+        self._next_token()
+
+        right_operand = self._positive_or_negative()
+
+        if right_operand is None:
             self._handle_unexpected_token()
 
-        return self._product_or_division_right_hand()
+        operation = None
+
+        if op_token_type is TokenType.MULTIPLY:
+            operation = MultiplyOp(left_operand, right_operand)
+        else:
+            operation = DivideOp(left_operand, right_operand)
+
+        return self._product_or_division_right_hand(operation)
 
     def _multiply_or_divide(self) -> bool:
         # Tries to parse a multiplication or a division sign, starting at the current token.
@@ -191,6 +206,8 @@ class Parser():
 
         if not self._current_token.kind is TokenType.DIE:
             return None
+
+        self._next_token()
 
         die_maximum_op = self._value_expression()
 
