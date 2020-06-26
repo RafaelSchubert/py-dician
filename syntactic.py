@@ -72,7 +72,7 @@ class Parser():
     def __init__(self):
         self._tokenizer = Tokenizer()
 
-    def parse(self, input_string: str) -> bool:
+    def parse(self, input_string: str) -> Operation:
         """Parses and validates a string accordingly to the dice-language.
 
         Parameters:
@@ -87,10 +87,10 @@ class Parser():
 
         self._ready(input_string)
 
-        valid = self._roll_expression()
+        roll_op = self._roll_expression()
 
-        if self._expect_token_is_any_of(TokenType.END):
-            return valid
+        if self._current_token.kind is TokenType.END:
+            return roll_op
 
         self._handle_unexpected_token()
 
@@ -122,7 +122,7 @@ class Parser():
 
         op_token_type = self._current_token.kind
 
-        if not op_token_type is (TokenType.PLUS, TokenType.MINUS):
+        if not op_token_type in (TokenType.PLUS, TokenType.MINUS):
             return left_operand
 
         self._next_token()
@@ -240,13 +240,13 @@ class Parser():
         if not self._begin_closure(Closure.PARENTHESES):
             return None
 
-        roll_op_tree = self._roll_expression()
+        roll_op = self._roll_expression()
 
-        if roll_op_tree is None:
+        if roll_op is None:
             self._handle_unexpected_token()
 
         if self._end_closure(Closure.PARENTHESES):
-            return roll_op_tree
+            return roll_op
 
         self._handle_unexpected_token()
 
@@ -352,7 +352,8 @@ if __name__ == '__main__':
     my_parser  = Parser()
     print(f'Is "{expression}" a valid roll expression?')
     try:
-        print('Yes.' if my_parser.parse(expression) else 'No.')
+        roll_op_tree = my_parser.parse(expression)
+        print('No.' if roll_op_tree is None else 'Yes.')
     except EndOfStringError as e:
         print(f'Ln {e.line}, Col {e.column}: The end of the string was reached.')
     except UnexpectedTokenError as e:
