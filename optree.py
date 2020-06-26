@@ -135,27 +135,92 @@ class DiceRollOp(BinaryOp):
 
 
 class NegateOp(UnaryOp):
-    def run(self) -> int:
+    """Operation that produces the arithmetic-negation of a value.
+
+    Parameters:
+        operand (Operation): an operation that produces the value to be arithmetically negated.
+    """
+
+    def run(self) -> Any:
+        """Returns the arithmetic-negation of a value.
+
+        Returns:
+            The result of the expression -n, where n is the value produced the single operand of
+            this operation.
+        """
+
         return -self._operand.run()
 
 
 class SumOp(BinaryOp):
+    """Operation that produces the sum of two values.
+
+    Parameters:
+        left_operand (Operation): an operation that produces the left-side value of the sum.
+        right_operand (Operation): an operation that produces the right-side value of the sum.
+    """
+
     def run(self) -> int:
+        """Returns the sum of two values.
+
+        Returns:
+            The result of the sum (a + b) of the two vales produced by the operands of this operation.
+        """
+
         return self._left_operand.run() + self._right_operand.run()
 
 
 class SubtractOp(BinaryOp):
+    """Operation that produces the subtraction of two values.
+
+    Parameters:
+        left_operand (Operation): an operation that produces the left-side value of the subtraction.
+        right_operand (Operation): an operation that produces the right-side value of the subtraction.
+    """
+
     def run(self) -> int:
+        """Returns the subtraction of two values.
+
+        Returns:
+            The result of the subtraction (a - b) of the two vales produced by the operands of this operation.
+        """
+
         return self._left_operand.run() - self._right_operand.run()
 
 
 class MultiplyOp(BinaryOp):
+    """Operation that produces the multiplication of two values.
+
+    Parameters:
+        left_operand (Operation): an operation that produces the left-side value of the multiplication.
+        right_operand (Operation): an operation that produces the right-side value of the multiplication.
+    """
+
     def run(self) -> int:
+        """Returns the multiplication of two values.
+
+        Returns:
+            The result of the multiplication (a * b) of the two vales produced by the operands of this operation.
+        """
+
         return self._left_operand.run() * self._right_operand.run()
 
 
 class DivideOp(BinaryOp):
+    """Operation that produces the division of two values.
+
+    Parameters:
+        left_operand (Operation): an operation that produces the left-side value of the division.
+        right_operand (Operation): an operation that produces the right-side value of the division.
+    """
+
     def run(self) -> int:
+        """Returns the division of two values.
+
+        Returns:
+            The result of the division (a / b) of the two vales produced by the operands of this operation.
+        """
+
         return self._left_operand.run() / self._right_operand.run()
 
 
