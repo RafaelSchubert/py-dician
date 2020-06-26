@@ -192,25 +192,29 @@ class Parser():
 
         self._handle_unexpected_token()
 
-    def _value_expression(self) -> bool:
+    def _value_expression(self) -> Operation:
         # Tries to parse a value, starting at the current token.
 
-        if self._parenthesized_expression():
-            return True
+        value_op = self._parenthesized_expression()
 
-        return self._literal_expression()
+        if value_op is None:
+            value_op = self._literal_expression()
 
-    def _parenthesized_expression(self) -> bool:
+        return value_op
+
+    def _parenthesized_expression(self) -> Operation:
         # Tries to parse an expression enclosed by parentheses, starting at the current token.
 
         if not self._begin_closure(Closure.PARENTHESES):
-            return False
+            return None
 
-        if not self._roll_expression():
+        roll_op_tree = self._roll_expression()
+
+        if roll_op_tree is None:
             self._handle_unexpected_token()
 
         if self._end_closure(Closure.PARENTHESES):
-            return True
+            return roll_op_tree
 
         self._handle_unexpected_token()
 
