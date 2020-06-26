@@ -9,21 +9,6 @@ class OperationError(PyDicianError):
     pass
 
 
-class OperandValueOfUnsupportedType(OperationError):
-    """Exception thrown by an n-ary operation when one of its operands results in a value of a type
-    that is not supported by the operation.
-
-    Parameters:
-        operand_value (Any): the value produced by the operand.
-        supported_types (Tuple[Any, ...]): a tuple containing the supported types expected for that
-                                           operand.
-    """
-
-    def __init__(self, operand_value: Any, supported_types: Tuple[Any, ...]):
-        self.operand_value = operand_value
-        self.supported_types = supported_types
-
-
 class Operation:
     """Base-class of the executable operations to which Py-Dician expressions are translated.
 
@@ -121,9 +106,6 @@ class DieOp(UnaryOp):
         '''
 
         die_maximum = self._operand.run()
-
-        if not isinstance(die_maximum, int):
-            raise OperandValueOfUnsupportedType(die_maximum, (int, ))
 
         return lambda: randint(1, die_maximum)
 
