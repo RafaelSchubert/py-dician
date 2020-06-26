@@ -267,29 +267,16 @@ class Parser():
 
         return literal_op
 
-    def _expect_token_is_any_of(self, *expected_token_types: Tuple[TokenType, ...]) -> bool:
-        # Checks if the current token is of any of the given types. If so, advances to next token.
-
-        return self._expect_token_is(lambda token: token.kind in expected_token_types)
-
-    def _expect_token_is(self, condition: Callable[[Token], bool]) -> bool:
-        # Checks if the current token satisfies a given condition. If so, advances to next token.
-
-        if not condition(self._current_token):
-            return False
-
-        self._next_token()
-
-        return True
-
     def _next_token(self) -> None:
         self._current_token = self._tokenizer.next_token()
 
     def _begin_closure(self, closure: Closure) -> bool:
         current = self._current_token
 
-        if not self._expect_token_is_any_of(closure.begin.token_type):
+        if not current.kind is closure.begin.token_type:
             return False
+
+        self._next_token()
 
         self._closure_stack.append((closure, current))
 
@@ -298,8 +285,10 @@ class Parser():
     def _end_closure(self, expected_closure: Closure) -> bool:
         current = self._current_token
 
-        if not self._expect_token_is_any_of(expected_closure.end.token_type):
+        if  not current.kind is expected_closure.end.token_type:
             return False
+
+        self._next_token()
 
         try:
             opened_closure = self._closure_stack.pop()
