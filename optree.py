@@ -99,10 +99,6 @@ class DieOp(UnaryOp):
         Returns:
             A parameterless callable that generates a random integer number in the range [1, n],
             with n being the maximum value of the die.
-
-        Raises:
-            OperandValueOfUnsupportedType if the single operand results in a value that is not an
-            int.
         '''
 
         die_maximum = self._operand.run()
