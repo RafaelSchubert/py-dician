@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Any, Callable, Tuple
 from random import randint
 from error import PyDicianError
 
@@ -7,6 +7,21 @@ class OperationError(PyDicianError):
     """Base-class for operation-related errors."""
 
     pass
+
+
+class OperandValueOfUnsupportedType(OperationError):
+    """Exception thrown by an n-ary operation when one of its operands results in a value of a type
+    that is not supported by the operation.
+
+    Parameters:
+        operand_value (Any): the value produced by the operand.
+        supported_types (Tuple[Any, ...]): a tuple containing the supported types expected for that
+                                           operand.
+    """
+
+    def __init__(self, operand_value: Any, supported_types: Tuple[Any, ...]):
+        self.operand_value = operand_value
+        self.supported_types = supported_types
 
 
 class Operation:
@@ -85,23 +100,32 @@ class LiteralValueOp(SimpleOp):
 class DieOp(UnaryOp):
     '''Operation that produces a "rollable die".
 
-    Actually, the operation produces a callable that generates a random integer number in the range
+    In fact, the operation produces a callable that generates a random integer number in the range
     [1, n], with n being the result of the single operand of this operation.
 
     Parameters:
-        operand (Operation): an operation that produces an integer that'll be the maximum value of
-                             the die.
+        operand (Operation): an operation that produces an integer number that'll be the maximum
+                             value of the die.
     '''
 
     def run(self) -> Callable[[], int]:
         '''Returns a "rollable die" in the form of a callable.
 
         Returns:
-            A parameterless callable that generates random integer numbers in the range [1, n], with
-            n being the maximum value of the die.
+            A parameterless callable that generates a random integer number in the range [1, n],
+            with n being the maximum value of the die.
+
+        Raises:
+            OperandValueOfUnsupportedType if the single operand results in a value that is not an
+            int.
         '''
 
-        return lambda: randint(1, self._operand.run())
+        die_maximum = self._operand.run()
+
+        if not isinstance(die_maximum, int):
+            raise OperandValueOfUnsupportedType(die_maximum, (int, ))
+
+        return lambda: randint(1, die_maximum)
 
 
 class DiceRollOp(BinaryOp):
