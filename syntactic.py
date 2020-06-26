@@ -1,7 +1,7 @@
 from typing import Callable, Tuple
 from error import ParseError
 from lexic import Closure, EndOfStringError, Token, Tokenizer, TokenType
-from optree import DiceRollOp, DieOp, LiteralValueOp, Operation
+from optree import DiceRollOp, DieOp, LiteralValueOp, NegateOp, Operation
 
 
 class UnexpectedTokenError(ParseError):
@@ -155,16 +155,22 @@ class Parser():
 
         return self._expect_token_is_any_of(TokenType.MULTIPLY, TokenType.DIVIDE)
 
-    def _positive_or_negative(self) -> bool:
+    def _positive_or_negative(self) -> Operation:
         # Tries to parse a positive or a negative value, starting at the current token.
 
-        if not self._plus_or_minus():
-            return self._dice_set_or_value()
+        op_token_type = self._current_token.kind
+        dice_val_op = self._dice_set_or_value()
 
-        if self._dice_set_or_value():
-            return True
+        if not op_token_type in (TokenType.PLUS, TokenType.MINUS):
+            return dice_val_op
 
-        self._handle_unexpected_token()
+        if dice_val_op is None:
+            self._handle_unexpected_token()
+
+        if op_token_type is TokenType.MINUS:
+            return NegateOp(dice_val_op)
+
+        return dice_val_op
 
     def _dice_set_or_value(self) -> Operation:
         # Tries to parse a dice set or a value, starting at the current token.
