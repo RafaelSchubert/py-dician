@@ -1,6 +1,7 @@
 from typing import Callable, Tuple
 from error import ParseError
 from lexic import Closure, EndOfStringError, Token, Tokenizer, TokenType
+from optree import LiteralValueOp, Operation
 
 
 class UnexpectedTokenError(ParseError):
@@ -213,15 +214,22 @@ class Parser():
 
         self._handle_unexpected_token()
 
-    def _literal_expression(self) -> bool:
+    def _literal_expression(self) -> Operation:
         # Tries to parse a literal value expression, starting at the current token.
 
         return self._numeric_literal()
 
-    def _numeric_literal(self) -> bool:
+    def _numeric_literal(self) -> Operation:
         # Tries to parse a numeric literal value expression, starting at the current token.
 
-        return self._expect_token_is_any_of(TokenType.INTEGER)
+        if not self._current_token.kind is TokenType.INTEGER:
+            return None
+
+        literal_op = LiteralValueOp(int(self._current_token.value))
+
+        self._next_token()
+
+        return literal_op
 
     def _expect_token_is_any_of(self, *expected_token_types: Tuple[TokenType, ...]) -> bool:
         # Checks if the current token is of any of the given types. If so, advances to next token.
