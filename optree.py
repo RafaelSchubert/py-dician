@@ -1,3 +1,4 @@
+from typing import Any, Callable
 from random import randint
 
 
@@ -8,7 +9,7 @@ class Operation:
     also be an operation that results in a value of a type accepted by the main operation.
     """
 
-    def run(self):
+    def run(self) -> Any:
         """Executes this operation.
 
         Must be overridden by derived classes.
@@ -53,16 +54,46 @@ class BinaryOp(Operation):
 
 
 class LiteralValueOp(SimpleOp):
-    def __init__(self, value):
+    """Operation that produces a fixed, unmodified value.
+
+    Parameters:
+        value (Any): the value that'll be returned when the operaton is executed.
+                     Note that a VALUE is expected, NOT an OPERATION.
+    """
+
+    def __init__(self, value: Any):
         super().__init__()
         self._value = value
 
-    def run(self):
+    def run(self) -> Any:
+        """Returns a fixed, unmodified value.
+
+        Returns:
+            The value that was stored at construction time, unmodified.
+        """
+
         return self._value
 
 
 class DieOp(UnaryOp):
-    def run(self):
+    '''Operation that produces a "rollable die".
+
+    Actually, the operation produces a callable that generates a random integer number in the range
+    [1, n], with n being the result of the single operand of this operation.
+
+    Parameters:
+        operand (Operation): an operation that produces an integer that'll be the maximum value of
+                             the die.
+    '''
+
+    def run(self) -> Callable[[], int]:
+        '''Returns a "rollable die" in the form of a callable.
+
+        Returns:
+            A parameterless callable that generates random integer numbers in the range [1, n], with
+            n being the maximum value of the die.
+        '''
+
         return lambda: randint(1, self._operand.run())
 
 
@@ -70,7 +101,7 @@ class DiceRollOp(BinaryOp):
     def __init__(self, left_operand: Operation, right_operand: Operation):
         super().__init__(left_operand, DieOp(right_operand))
 
-    def run(self):
+    def run(self) -> int:
         dice_count = self._left_operand.run()
         die = self._right_operand.run()
 
@@ -78,27 +109,27 @@ class DiceRollOp(BinaryOp):
 
 
 class NegateOp(UnaryOp):
-    def run(self):
+    def run(self) -> int:
         return -self._operand.run()
 
 
 class SumOp(BinaryOp):
-    def run(self):
+    def run(self) -> int:
         return self._left_operand.run() + self._right_operand.run()
 
 
 class SubtractOp(BinaryOp):
-    def run(self):
+    def run(self) -> int:
         return self._left_operand.run() - self._right_operand.run()
 
 
 class MultiplyOp(BinaryOp):
-    def run(self):
+    def run(self) -> int:
         return self._left_operand.run() * self._right_operand.run()
 
 
 class DivideOp(BinaryOp):
-    def run(self):
+    def run(self) -> int:
         return self._left_operand.run() / self._right_operand.run()
 
 
