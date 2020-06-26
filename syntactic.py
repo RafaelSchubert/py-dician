@@ -1,7 +1,7 @@
 from typing import Callable, Tuple
 from error import ParseError
 from lexic import Closure, EndOfStringError, Token, Tokenizer, TokenType
-from optree import LiteralValueOp, Operation
+from optree import DieOp, LiteralValueOp, Operation
 
 
 class UnexpectedTokenError(ParseError):
@@ -169,28 +169,25 @@ class Parser():
     def _dice_set_or_value(self) -> bool:
         # Tries to parse a dice set or a value, starting at the current token.
 
-        if self._value_expression():
-            return self._optional_die()
-
-        return self._die_expression()
-
-    def _optional_die(self) -> bool:
-        # Tries to parse an optional die definition, starting at the current token.
+        if not self._value_expression():
+            return self._die_expression()
 
         self._die_expression()
 
         return True
 
-    def _die_expression(self) -> bool:
+    def _die_expression(self) -> Operation:
         # Tries to parse a die definition, starting at the current token.
 
-        if not self._expect_token_is_any_of(TokenType.DIE):
-            return False
+        if not self._current_token.kind is TokenType.DIE:
+            return None
 
-        if self._value_expression():
-            return True
+        die_maximum_op = self._value_expression()
 
-        self._handle_unexpected_token()
+        if die_maximum_op is None:
+            self._handle_unexpected_token()
+
+        return DieOp(die_maximum_op)
 
     def _value_expression(self) -> Operation:
         # Tries to parse a value, starting at the current token.
