@@ -2,28 +2,32 @@ from random import randint
 
 
 class Operation:
-    """Base-class for the runnable operations which the Py-Dician expressions are translated to."""
+    """Base-class of the executable operations to which Py-Dician expressions are translated.
+
+    An operation takes zero or more operands, which act as its parameters. Each operand should
+    also be an operation that results in a value of a type accepted by the main operation.
+    """
 
     def run(self):
         """Executes this operation.
 
-        Must be overridden.
+        Must be overridden by derived classes.
 
         Returns:
-            The result of the operation.
+            The result of the operation, which could be anything really.
         """
 
-        return NotImplementedError
+        raise NotImplementedError
 
 
 class SimpleOp(Operation):
-    """Base-class for operations that take no operands, such as literals."""
+    """Base-class of operations that take no operands (parameters), such as literal values."""
 
     pass
 
 
 class UnaryOp(Operation):
-    """Base-class for operations that take a single operand.
+    """Base-class of operations that take a single operand (parameter), such as arithmetic-negation or die definition.
 
     Parameters:
         operand (Operation): the single operand of this operation.
@@ -35,7 +39,7 @@ class UnaryOp(Operation):
 
 
 class BinaryOp(Operation):
-    """Base-class for operations that take exactly two operands, a left and a right one.
+    """Base-class of operations that take exactly two operands (parameters) -- a left and a right one.
 
     Parameters:
         left_operand (Operation): the left operand of this operation.
@@ -99,5 +103,21 @@ class DivideOp(BinaryOp):
 
 
 if __name__ == "__main__":
-    dice_roll = DiceRollOp(SumOp(LiteralValueOp(1), LiteralValueOp(2)), MultiplyOp(LiteralValueOp(2), LiteralValueOp(3)))
+    # Equivalent to "10 * (1d10 - 1) + 1d10".
+    dice_roll = SumOp(
+        MultiplyOp(
+            LiteralValueOp(10),
+            SubtractOp(
+                DiceRollOp(
+                    LiteralValueOp(1),
+                    LiteralValueOp(10)
+                ),
+                LiteralValueOp(1)
+            )
+        ),
+        DiceRollOp(
+            LiteralValueOp(1),
+            LiteralValueOp(10)
+        )
+    )
     print(dice_roll.run())
