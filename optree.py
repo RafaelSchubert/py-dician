@@ -111,10 +111,23 @@ class DieOp(UnaryOp):
 
 
 class DiceRollOp(BinaryOp):
+    """Operation that produces the sum of multiple rolls of a single die.
+
+    Parameters:
+        left_operand (Operation): an operation that produces the number of rolled dice.
+        right_operand (Operation): an operation that produces the maximum value of the rolled die.
+    """
+
     def __init__(self, left_operand: Operation, right_operand: Operation):
         super().__init__(left_operand, DieOp(right_operand))
 
     def run(self) -> int:
+        """Returns the sum of multiple rolls of a single die.
+
+        Returns:
+            The sum of the results of multiple rolls of a single type of die.
+        """
+
         dice_count = self._left_operand.run()
         die = self._right_operand.run()
 
