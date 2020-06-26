@@ -1,5 +1,12 @@
 from typing import Any, Callable
 from random import randint
+from error import PyDicianError
+
+
+class OperationError(PyDicianError):
+    """Base-class for operation-related errors."""
+
+    pass
 
 
 class Operation:
