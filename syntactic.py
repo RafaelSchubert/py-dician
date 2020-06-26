@@ -174,10 +174,13 @@ class Parser():
         # Tries to parse a positive or a negative value, starting at the current token.
 
         op_token_type = self._current_token.kind
-        dice_val_op = self._dice_set_or_value()
 
         if not op_token_type in (TokenType.PLUS, TokenType.MINUS):
-            return dice_val_op
+            return self._dice_set_or_value()
+
+        self._next_token()
+
+        dice_val_op = self._dice_set_or_value()
 
         if dice_val_op is None:
             self._handle_unexpected_token()
