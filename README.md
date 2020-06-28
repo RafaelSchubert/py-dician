@@ -75,22 +75,21 @@ for i in range(10):
 
 ## 4) What is next?
 
-Of course, simply parsing and validating _roll expressions_ yields no meaningful results other than that you've got the grammar right.
+Possible features:
 
-The next steps aim for more practical applications:
-
-- [ ] Semantic analysis;
-- [ ] Parsing resulting in executable operation trees;
-  - Perhaps a dice library as a _sibling-project_;
+- Free functions to simplify the user's life ;). Perhaps:
+  - `parse(...)` to quickly produce an executable operation-tree;
+  - `roll(...)` to quickly parse and roll a Py-Dician expression;
 - More complex roll-operations, such as:
-  - [ ] Exploding rolls (may result in rolls higher than the die's maximum):
-    - [ ] Exploding at a given threshold;
-  - [ ] Exploding dice (additional dice):
-    - [ ] Also exploding at a given threshold;
-  - [ ] Drop lowest/highest roll;
-  - [ ] Success counting;
-  - [ ] Result-set operations;
+  - Exploding rolls (may result in rolls higher than the die's maximum):
+    - Exploding at a given threshold;
+  - Exploding dice (additional dice):
+    - Also exploding at a given threshold;
+  - Drop lowest/highest roll;
+  - Success counting;
+  - Result-set operations;
   - Any other ideas that may eventually come into mind...
+- Perhaps a dice library as a _sibling-project_;
 
 ## 5) Suggestions
 
