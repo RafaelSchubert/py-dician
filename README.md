@@ -12,7 +12,57 @@ I thought it would be fun to combine something useful (Python) with something wh
 
 Py-Dician has a grammar: a set of lexic and syntactic rules that all sentences in this language must follow. It details all the symbols of the language and their meaning, how a sentence can be structured and in what order its operations are solved. The complete Py-Dician grammar can be found at `./doc/grammar.md`.
 
-### 2.2) Lexic Components
+### 2.2) Free Functions
+
+The user can quickly process Py-Dician expressions using either the `parse()` or `roll()` free functions.
+
+The `parse()` function takes an expression as a string argument, parses it and returns the resulting operation tree. It may raise an exception if the expression is inconsistent.
+
+```Python
+import pydician
+
+roll_op = pydician.parse("1d6 - 1d6")
+
+for i in range(10):
+  print(f'{i}: {roll_op.run():+}')
+
+# Possible output:
+#
+# 0: +1
+# 1: +0
+# 2: +2
+# 3: -1
+# 4: +5
+# 5: -4
+# 6: +3
+# 7: -3
+# 8: -3
+# 9: +1
+```
+
+The `roll()` function takes an expression as a string argument, parses it and immediately runs it, returning its result. As with `parse()`, it may raise an exception if the expression is inconsistent.
+
+```Python
+import pydician
+
+for i in range(10):
+  print(f'{i}: {pydician.roll("1d12 + 1d8"):+}')
+
+# Possible output:
+#
+# 0: +9
+# 1: +15
+# 2: +13
+# 3: +16
+# 4: +9
+# 5: +6
+# 6: +12
+# 7: +6
+# 8: +16
+# 9: +10
+```
+
+### 2.3) Lexic Components
 
 There's also components for lexic analysis. Using the `Tokenizer` class, the language's tokens can be extracted from a string by sequentially calling the `.next_token()` method until the _end_ token is found (`TokenType.END` type) or an exception is raised. Each token is represented by a `Token` object, which contains the token's type (`.type`), value (`.value`) and position in the string (`.line` and `.column`).
 
@@ -39,7 +89,7 @@ while not tk.type is pydician.TokenType.END:
 # Fecthed: 3 (INTEGER, Ln 01, Col 07)
 ```
 
-### 2.3) Syntactic Components
+### 2.4) Syntactic Components
 
 The syntactic analysis is made by the `Parser` class, which also translates a Py-Dician sentence into a tree of executable operations. All you need to do is to call `.parse()` providing the sentence as a string argument for the method.
 
@@ -77,9 +127,6 @@ for i in range(10):
 
 Possible features:
 
-- Free functions to simplify the user's life ;). Perhaps:
-  - `parse(...)` to quickly produce an executable operation-tree;
-  - `roll(...)` to quickly parse and roll a Py-Dician expression;
 - More complex roll-operations, such as:
   - Exploding rolls (may result in rolls higher than the die's maximum):
     - Exploding at a given threshold;
