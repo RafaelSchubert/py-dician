@@ -89,7 +89,7 @@ class Parser():
 
         roll_op = self._roll_expression()
 
-        if self._current_token.kind is TokenType.END:
+        if self._current_token.type is TokenType.END:
             return roll_op
 
         self._handle_unexpected_token()
@@ -120,7 +120,7 @@ class Parser():
     def _addition_or_subtraction_right_hand(self, left_operand: Operation) -> Operation:
         # Tries to parse the optional right side of an addition or a subtraction, starting at the current token.
 
-        op_token_type = self._current_token.kind
+        op_token_type = self._current_token.type
 
         if not op_token_type in (TokenType.PLUS, TokenType.MINUS):
             return left_operand
@@ -154,7 +154,7 @@ class Parser():
     def _product_or_division_right_hand(self, left_operand: Operation) -> Operation:
         # Tries to parse the optional right side of a multiplication or a division, starting at the current token.
 
-        op_token_type = self._current_token.kind
+        op_token_type = self._current_token.type
 
         if not op_token_type in (TokenType.MULTIPLY, TokenType.DIVIDE):
             return left_operand
@@ -178,7 +178,7 @@ class Parser():
     def _positive_or_negative(self) -> Operation:
         # Tries to parse a positive or a negative value, starting at the current token.
 
-        op_token_type = self._current_token.kind
+        op_token_type = self._current_token.type
 
         if not op_token_type in (TokenType.PLUS, TokenType.MINUS):
             return self._dice_set_or_value()
@@ -212,7 +212,7 @@ class Parser():
     def _die_expression(self) -> Operation:
         # Tries to parse a die definition, starting at the current token.
 
-        if not self._current_token.kind is TokenType.DIE:
+        if not self._current_token.type is TokenType.DIE:
             return None
 
         self._next_token()
@@ -258,7 +258,7 @@ class Parser():
     def _numeric_literal(self) -> Operation:
         # Tries to parse a numeric literal value expression, starting at the current token.
 
-        if not self._current_token.kind is TokenType.INTEGER:
+        if not self._current_token.type is TokenType.INTEGER:
             return None
 
         literal_op = LiteralValueOp(int(self._current_token.value))
@@ -273,7 +273,7 @@ class Parser():
     def _begin_closure(self, closure: Closure) -> bool:
         current = self._current_token
 
-        if not current.kind is closure.begin.token_type:
+        if not current.type is closure.begin.token_type:
             return False
 
         self._next_token()
@@ -285,7 +285,7 @@ class Parser():
     def _end_closure(self, expected_closure: Closure) -> bool:
         current = self._current_token
 
-        if  not current.kind is expected_closure.end.token_type:
+        if  not current.type is expected_closure.end.token_type:
             return False
 
         self._next_token()
@@ -302,7 +302,7 @@ class Parser():
         return True
 
     def _handle_unexpected_token(self) -> None:
-        if self._current_token.kind is TokenType.END:
+        if self._current_token.type is TokenType.END:
             self._check_orphan_closure_begin()
 
             raise EndOfStringError(self._current_token.line, self._current_token.column)
@@ -320,7 +320,7 @@ class Parser():
             pass
 
     def _check_incomplete_enclosed_expression(self) -> None:
-        ended_closure = next((c for c in Closure if c.end.token_type==self._current_token.kind), None)
+        ended_closure = next((c for c in Closure if c.end.token_type==self._current_token.type), None)
 
         if ended_closure is None:
             return

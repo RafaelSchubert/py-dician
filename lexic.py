@@ -79,20 +79,20 @@ class Token():
     """Class that represents a token of the dice-language, extracted from a string.
 
     Parameters:
-        kind (TokenType): a member from the TokenType enum representing the token's type.
+        type (TokenType): a member from the TokenType enum representing the token's type.
         value (str): the value of the token, extracted from the string.
         line (int): the line at which the token starts.
         column (int): the position in the line at which the token starts.
     """
 
-    def __init__(self, kind: TokenType, value: str, line: int, column: int):
-        self.kind = kind
+    def __init__(self, type: TokenType, value: str, line: int, column: int):
+        self.type = type
         self.value = value
         self.line = line
         self.column = column
 
     def __str__(self) -> str:
-        return '[End of String]' if self.kind is TokenType.END else self.value
+        return '[End of String]' if self.type is TokenType.END else self.value
 
 
 class EndOfStringError(ParseError):
@@ -252,11 +252,11 @@ class Tokenizer():
 
         self._skip_symbols_while(lambda x: x.isdigit())
 
-    def _fetch_token(self, kind: TokenType) -> Token:
+    def _fetch_token(self, token_type: TokenType) -> Token:
         # Returns the current token and begins a new one.
 
         token_value = self._input_string[self._token_start : self._current_index]
-        token = Token(kind, token_value, self._token_line, self._token_column)
+        token = Token(token_type, token_value, self._token_line, self._token_column)
 
         self._begin_token()
 
