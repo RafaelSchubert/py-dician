@@ -12,18 +12,6 @@ I thought it would be fun to combine something useful (Python) with something wh
 
 Py-Dician has a grammar: a set of lexic and syntactic rules that all sentences in this language must follow. It details all the symbols of the language and their meaning, how a sentence can be structured and in what order its operations are solved. The complete Py-Dician grammar can be found at `./doc/grammar.md`.
 
-As an example, `2d6 + 3` means _roll two six-sided dice, add their results and add three to that_, which can be broken as:
-
-```
-2d6 + 3
-
-    +
-   / \
-  d   3
- / \
-2   6
-```
-
 ### 2.2) Lexic Components
 
 There's also components for lexic analysis. Using the `Tokenizer` class, the language's tokens can be extracted from a string by sequentially calling the `.next_token()` method until the _end_ token is found (`TokenType.END` type) or an exception is raised. Each token is represented by a `Token` object, which contains the token's type (`.type`), value (`.value`) and position in the string (`.line` and `.column`).
@@ -51,28 +39,32 @@ while not tk.type is pydician.TokenType.END:
 # Fecthed: 3 (INTEGER, Ln 01, Col 07)
 ```
 
-Use the `TokenType` enum to reference the language's token types.
+### 2.3) Syntactic Components
+
+The syntactic analysis is made by the `Parser` class, which also translates a Py-Dician sentence into a tree of executable operations. All you need to do is to call `.parse()` providing the sentence as a string argument for the method.
 
 ```Python
 import pydician
 
-for tt in pydician.TokenType:
-  print(f'{tt.name: <20}: {tt.symbol}')
+parser = pydician.Parser()
+dice_roll = parser.parse("2d6 + 3")
 
-# Output
+for i in range(10):
+  print(f'{i}th roll: {dice_roll.run()}')
+
+# Possible output:
 #
-# END                 : None
-# PLUS                : +
-# MINUS               : -
-# MULTIPLY            : *
-# DIVIDE              : /
-# LEFT_PARENTHESIS    : (
-# RIGHT_PARENTHESIS   : )
-# DIE                 : d
-# INTEGER             : None
+# 0th roll: 13
+# 1th roll: 13
+# 2th roll: 9
+# 3th roll: 11
+# 4th roll: 12
+# 5th roll: 7
+# 6th roll: 8
+# 7th roll: 10
+# 8th roll: 13
+# 9th roll: 11
 ```
-
-- a _**syntactic module**_ for all the syntactic stuff (syntactic parsing and validation) in `./syntactic.py`.
 
 ## 3) What does the language feature?
 
