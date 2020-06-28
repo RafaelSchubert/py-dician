@@ -828,3 +828,12 @@ class Parser():
             self._closure_stack.append(opened_closure)
         except IndexError:
             pass
+
+
+def parse(input: str) -> Operation:
+    return Parser().parse(input)
+
+
+def roll(input: str) -> Any:
+    roll_tree = parse(input)
+    return roll_tree.run() if roll_tree else None
