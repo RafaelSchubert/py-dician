@@ -46,20 +46,20 @@ The `roll()` function takes an expression as a string argument, parses it and im
 import pydician
 
 for i in range(10):
-  print(f'{i}: {pydician.roll("1d12 + 1d8"):+}')
+  print(f'{i}: {pydician.roll("1d12 + 1d8")}')
 
 # Possible output:
 #
-# 0: +9
-# 1: +15
-# 2: +13
-# 3: +16
-# 4: +9
-# 5: +6
-# 6: +12
-# 7: +6
-# 8: +16
-# 9: +10
+# 0: 9
+# 1: 15
+# 2: 13
+# 3: 16
+# 4: 9
+# 5: 6
+# 6: 12
+# 7: 6
+# 8: 16
+# 9: 10
 ```
 
 ### 2.3) Lexic Components
