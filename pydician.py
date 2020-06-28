@@ -828,24 +828,3 @@ class Parser():
             self._closure_stack.append(opened_closure)
         except IndexError:
             pass
-
-
-if __name__ == '__main__':
-    expression = '3 * +1 / 2d6 - 2 + 1d(d6) / -(2 + 1)d10 - 5 + +(d4)d8 * (d(d3))d(d12) + (d(4 + 2))d(6d6)'
-    my_parser  = Parser()
-    print(f'Is "{expression}" a valid roll expression?')
-    try:
-        roll_op_tree = my_parser.parse(expression)
-        print('No.' if roll_op_tree is None else 'Yes.')
-    except EndOfStringError as e:
-        print(f'Ln {e.line}, Col {e.column}: The end of the string was reached.')
-    except UnexpectedTokenError as e:
-        print(f'Ln {e.line}, Col {e.column}: Unexpected token found: "{e.found_token}".')
-    except OrphanClosureBeginError as e:
-        print(f'Ln {e.line}, Col {e.column}: Orphan closure begin: "{e.closure.begin}" - no matching "{e.closure.end}" found.')
-    except OrphanClosureEndError as e:
-        print(f'Ln {e.line}, Col {e.column}: Orphan closure end: "{e.closure.end}" - no matching "{e.closure.begin}" found previously.')
-    except IncompleteEnclosedExpressionError as e:
-        print(f'Ln {e.line}, Col {e.column}: Incomplete enclosed expression: the expression enclosed by "{e.closure.begin} {e.closure.end}" is possibly incomplete.')
-    except ParseError as e:
-        print(f'Something went wrong! --> {repr(e)}')
