@@ -218,24 +218,3 @@ class DivideOp(BinaryOp):
         """
 
         return self._left_operand.run() / self._right_operand.run()
-
-
-if __name__ == "__main__":
-    # Equivalent to "10 * (1d10 - 1) + 1d10".
-    dice_roll = SumOp(
-        MultiplyOp(
-            LiteralValueOp(10),
-            SubtractOp(
-                DiceRollOp(
-                    LiteralValueOp(1),
-                    DieOp(LiteralValueOp(10))
-                ),
-                LiteralValueOp(1)
-            )
-        ),
-        DiceRollOp(
-            LiteralValueOp(1),
-            DieOp(LiteralValueOp(10))
-        )
-    )
-    print(dice_roll.run())
