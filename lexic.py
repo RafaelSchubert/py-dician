@@ -244,7 +244,7 @@ class Tokenizer():
     def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[TokenType, ...]) -> bool:
         # Checks if the current symbol is any of a given set. If it is, advances to the next symbol.
 
-        if not any((x.symbol==self._current_symbol for x in expected_symbols)):
+        if not self._current_symbol in (x.symbol for x in expected_symbols):
             return False
 
         self._next_symbol()
@@ -254,12 +254,7 @@ class Tokenizer():
     def _expect_symbol_is_any_digit(self) -> bool:
         # Checks if the symbol a digit. If it is, advances to the next symbol.
 
-        return self._expect_symbol_is(lambda symbol: symbol.isdigit())
-
-    def _expect_symbol_is(self, condition: Callable[[str], bool]) -> bool:
-        # Checks if the current symbol satisfies a given condition. If it does, advances to the next symbol.
-
-        if not condition(self._current_symbol):
+        if not self._current_symbol.isdigit():
             return False
 
         self._next_symbol()
