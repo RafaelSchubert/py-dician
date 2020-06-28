@@ -72,7 +72,7 @@ class Closure(Enum):
         self.end = end
 
     def __str__(self) -> str:
-        return f'("{self.begin.symbol}", "{self.end.symbol}")'
+        return f'("{self.begin}", "{self.end}")'
 
 
 class Token():
