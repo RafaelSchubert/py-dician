@@ -273,7 +273,7 @@ class Parser():
     def _begin_closure(self, closure: Closure) -> bool:
         current = self._current_token
 
-        if not current.type is closure.begin.token_type:
+        if not current.type is closure.begin:
             return False
 
         self._next_token()
@@ -285,7 +285,7 @@ class Parser():
     def _end_closure(self, expected_closure: Closure) -> bool:
         current = self._current_token
 
-        if  not current.type is expected_closure.end.token_type:
+        if  not current.type is expected_closure.end:
             return False
 
         self._next_token()
@@ -320,7 +320,7 @@ class Parser():
             pass
 
     def _check_incomplete_enclosed_expression(self) -> None:
-        ended_closure = next((c for c in Closure if c.end.token_type==self._current_token.type), None)
+        ended_closure = next((c for c in Closure if c.end==self._current_token.type), None)
 
         if ended_closure is None:
             return

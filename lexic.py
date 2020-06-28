@@ -1,82 +1,61 @@
 from typing import Callable, NamedTuple, Tuple
-from enum import auto, Enum, IntEnum, unique
+from enum import Enum, unique
 from error import ParseError
 
 
 @unique
-class TokenType(IntEnum):
-    """Constants enumeration for the possible types of tokens of the dice-language."""
-
-    END = auto()
-    LEFT_PARENTHESIS = auto()
-    RIGHT_PARENTHESIS = auto()
-    PLUS = auto()
-    MINUS = auto()
-    MULTIPLY = auto()
-    DIVIDE = auto()
-    INTEGER = auto()
-    DIE = auto()
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Symbol(Enum):
-    """Base-class enumeration of the symbols of the dice-language.
+class TokenType(Enum):
+    """Constants enumeration for Py-Dician's token types.
 
     Parameters:
-        symbol (str): the symbol per se.
-        token_type (TokenType): the corresponding token type of that symbol.
+        symbol (str): the symbol for that token type.
+                      May be None if it's not represented by a symbol.
     """
 
-    def __init__(self, symbol: str, token_type: TokenType):
-        self.symbol = symbol
-        self.token_type = token_type
+    END = (None, )
+    PLUS = ('+', )
+    MINUS = ('-', )
+    MULTIPLY = ('*', )
+    DIVIDE = ('/', )
+    LEFT_PARENTHESIS = ('(', )
+    RIGHT_PARENTHESIS = (')', )
+    DIE = ('d', )
+    INTEGER = (None, )
+
+    def __new__(cls, symbol: str):
+        obj = object.__new__(cls)
+        obj._value_ = len(cls.__members__)
+        obj.symbol = symbol
+        return obj
 
     def __str__(self) -> str:
-        return self.symbol
-
-
-@unique
-class Sign(Symbol):
-    """Constants enumeration of the signs (single-character symbols) of the dice-language."""
-
-    LEFT_PARENTHESIS = ('(', TokenType.LEFT_PARENTHESIS)
-    RIGHT_PARENTHESIS = (')', TokenType.RIGHT_PARENTHESIS)
-    PLUS = ('+', TokenType.PLUS)
-    MINUS = ('-', TokenType.MINUS)
-    MULTIPLY = ('*', TokenType.MULTIPLY)
-    DIVIDE = ('/', TokenType.DIVIDE)
-
-
-@unique
-class Keyword(Symbol):
-    """Constants enumeration of the keywords (reserved identifiers) of the dice-language."""
-
-    DIE = ('d', TokenType.DIE)
+        return self.symbol if self.symbol else f'<{self.name}>'
 
 
 @unique
 class Closure(Enum):
-    """Closures of the dice-language.
+    """Py-Dician's closures (pairs of tokens that enclose expressions).
 
     Parameters:
-        begin (Symbol): the symbol that opens the closure.
-        end (Symbol): the symbol that closes the closure.
+        begin (TokenType): the type of token that opens the closure.
+        end (TokenType): the type of token that closes the closure.
     """
 
-    PARENTHESES = (Sign.LEFT_PARENTHESIS, Sign.RIGHT_PARENTHESIS)
+    PARENTHESES = (TokenType.LEFT_PARENTHESIS, TokenType.RIGHT_PARENTHESIS)
 
-    def __init__(self, begin: Symbol, end: Symbol):
-        self.begin = begin
-        self.end = end
+    def __new__(cls, begin: TokenType, end: TokenType):
+        obj = object.__new__(cls)
+        obj._value_ = len(cls.__members__)
+        obj.begin = begin
+        obj.end = end
+        return obj
 
     def __str__(self) -> str:
-        return f'("{self.begin}", "{self.end}")'
+        return str((str(self.begin), str(self.end)))
 
 
 class Token():
-    """Class that represents a token of the dice-language, extracted from a string.
+    """Class that represents a Py-Dician token, extracted from a string.
 
     Parameters:
         type (TokenType): a member from the TokenType enum representing the token's type.
@@ -92,7 +71,7 @@ class Token():
         self.column = column
 
     def __str__(self) -> str:
-        return '[End of String]' if self.type is TokenType.END else self.value
+        return self.value if self.value else str(self.type)
 
 
 class EndOfStringError(ParseError):
@@ -121,7 +100,7 @@ class UnknownSymbolError(ParseError):
 
 
 class Tokenizer():
-    """Class that parses a string accordingly to the dice-language, fetching each token sequentially.
+    """Class that parses a string accordingly to Py-Dician, fetching each token sequentially.
 
     Parameters:
         [optional] input_string (str): the string to be parsed. The default-value is an empty string, i.e. no string to parse.
@@ -164,25 +143,25 @@ class Tokenizer():
             self._skip_blanks()
             self._begin_token()
 
-            if self._expect_symbol_is_any_of(Sign.LEFT_PARENTHESIS):
+            if self._expect_symbol_is_any_of(TokenType.LEFT_PARENTHESIS):
                 return self._fetch_token(TokenType.LEFT_PARENTHESIS)
 
-            if self._expect_symbol_is_any_of(Sign.RIGHT_PARENTHESIS):
+            if self._expect_symbol_is_any_of(TokenType.RIGHT_PARENTHESIS):
                 return self._fetch_token(TokenType.RIGHT_PARENTHESIS)
 
-            if self._expect_symbol_is_any_of(Sign.PLUS):
+            if self._expect_symbol_is_any_of(TokenType.PLUS):
                 return self._fetch_token(TokenType.PLUS)
 
-            if self._expect_symbol_is_any_of(Sign.MINUS):
+            if self._expect_symbol_is_any_of(TokenType.MINUS):
                 return self._fetch_token(TokenType.MINUS)
 
-            if self._expect_symbol_is_any_of(Sign.MULTIPLY):
+            if self._expect_symbol_is_any_of(TokenType.MULTIPLY):
                 return self._fetch_token(TokenType.MULTIPLY)
 
-            if self._expect_symbol_is_any_of(Sign.DIVIDE):
+            if self._expect_symbol_is_any_of(TokenType.DIVIDE):
                 return self._fetch_token(TokenType.DIVIDE)
 
-            if self._expect_symbol_is_any_of(Keyword.DIE):
+            if self._expect_symbol_is_any_of(TokenType.DIE):
                 return self._fetch_token(TokenType.DIE)
 
             if self._expect_symbol_is_any_digit():
@@ -262,10 +241,10 @@ class Tokenizer():
 
         return token
 
-    def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[Symbol, ...]) -> bool:
+    def _expect_symbol_is_any_of(self, *expected_symbols: Tuple[TokenType, ...]) -> bool:
         # Checks if the current symbol is any of a given set. If it is, advances to the next symbol.
 
-        if not any((x.symbol == self._current_symbol for x in expected_symbols)):
+        if not any((x.symbol==self._current_symbol for x in expected_symbols)):
             return False
 
         self._next_symbol()
