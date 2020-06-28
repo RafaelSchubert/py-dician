@@ -101,7 +101,7 @@ class DieOp(UnaryOp):
             with n being the maximum value of the die.
         '''
 
-        die_maximum = self._operand.run()
+        die_maximum = int(self._operand.run())
 
         return lambda: randint(1, die_maximum)
 
@@ -124,7 +124,7 @@ class DiceRollOp(BinaryOp):
             The sum of the results of multiple rolls of a single type of die.
         """
 
-        dice_count = self._left_operand.run()
+        dice_count = int(self._left_operand.run())
         die = self._right_operand.run()
 
         return sum(die() for i in range(dice_count))
