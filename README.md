@@ -1,14 +1,14 @@
 # Py-Dician
 
-## 1) What is Py-Dician?
+## What is Py-Dician?
 
 This one is a little project of mine to practice and get used to working with the Python programming language.
 
 I thought it would be fun to combine something useful (Python) with something which I enjoy (tabletop RPGs). So I decided to make a small, simple dice roll notation language — a _dice-language_ — with a Python interpreter — thus _Py-Dician_. As a bonus, I improve my understanding of interpreters and compilers — which are quite interesting, might I add.
 
-## 2) What does the language feature?
+## What does Py-Dician feature?
 
-### 2.1) Dice rolls, of course
+### Dice rolls, of course
 
 You can describe the roll of multiple dice with the `NdF` notation, where `N` is the number of dice, and `F` the maximum value of the die. (or number of _faces_, numbered 1 through `F`) You can also ommit the number of dice for a roll of single die.
 
@@ -16,7 +16,7 @@ For instance, `3d6` means _"roll three six-sided dice"_, `1d10` means _"roll a s
 
 That same notation is regularly used by tabletop games that require some different dice rolls, especially RPGs.
 
-### 2.2) Arithmetic operations
+### Arithmetic operations
 
 You can use any of the four main arithmetic operations (sum, subtraction, multiplication and division) with the results of the dice rolls, mixed with fixed numbers. That lets you apply modifiers to these rolls and/or make basic math with them. Indeed, many tabletop RPG rules require adding modifiers to dice rolls.
 
@@ -28,15 +28,13 @@ The operations follow the same precedence as their mathematic counterparts: oper
 
 Suppose we need to roll a number ranging from 25 to 50, stepping 5 at a time. (25, 30, 35, 40, 45 and 50) We could do so by rolling a single six-sided die, adding four to the result and multiplying it by five. If we write that literally, we get `1d6 + 4 * 5`, which actually doesn't meet our description. The multiplication would be solved before the sum, resulting in 21, 22, 23, 24, 25 or 26 instead. So we change the operation precedence by enclosing the sum in parentheses: `(1d6 + 4) * 5`.
 
-- Defining the number of dice and die faces through roll expressions (rolls within rolls within rolls...);
+## What is Py-Dician comprised of?
 
-## 3) What is it comprised of?
-
-### 3.1) Grammar
+### Grammar
 
 Py-Dician has a grammar: a set of lexic and syntactic rules that all sentences in this language must follow. It details all the symbols of the language and their meaning, how a sentence can be structured and in what order its operations are solved. The complete Py-Dician grammar can be found at `./doc/grammar.md`.
 
-### 3.2) Free Functions
+### Free Functions
 
 The user can quickly process Py-Dician expressions using either the `parse()` or `roll()` free functions.
 
@@ -76,7 +74,7 @@ print(", ".join(str(roll) for roll in few_rolls))
 # 9, 15, 13, 16, 9, 6, 12, 6, 16, 10
 ```
 
-### 3.3) Lexic Components
+### Lexic Components
 
 There's also components for lexic analysis. Using the `Tokenizer` class, the language's tokens can be extracted from a string by sequentially calling the `.next_token()` method until the _end_ token is found (`TokenType.END` type) or an exception is raised. Each token is represented by a `Token` object, which contains the token's type (`.type`), value (`.value`) and position in the string (`.line` and `.column`).
 
@@ -110,7 +108,7 @@ for tk in fetched_tokens:
 # Fecthed: 3 (INTEGER   , Ln 01, Col 07)
 ```
 
-### 3.4) Syntactic Components
+### Syntactic Components
 
 The syntactic analysis is made by the `Parser` class, which also translates a Py-Dician sentence into a tree of executable operations. All you need to do is to call `.parse()` providing the sentence as a string argument for the method.
 
@@ -140,8 +138,7 @@ for i in range(10):
 # 9: 2d6 + 3 = 11
 ```
 
-
-## 4) What is next?
+## What is next?
 
 Possible features:
 
@@ -156,6 +153,6 @@ Possible features:
   - Any other ideas that may eventually come into mind...
 - Perhaps a dice library as a _sibling-project_;
 
-## 5) Suggestions
+## Suggestions
 
 I would appreciate suggestions and reviews on ideas, mistakes and best practices. For that, you may mail me at rafael.schubert.campos@gmail.com.
