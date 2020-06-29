@@ -60,23 +60,30 @@ There's also components for lexic analysis. Using the `Tokenizer` class, the lan
 import pydician
 
 tk_fetcher = pydician.Tokenizer()
+
+# Adds three to the roll of two six-sided dice.
 tk_fetcher.set_input_string("2d6 + 3")
 
 # Or just:
 # tk_fetcher = pydician.Tokenizer("2d6 + 3")
 
-tk = tk_fetcher.next_token()
-while not tk.type is pydician.TokenType.END:
-  print(f'Fecthed: {tk} ({tk.type.name: <7}, Ln {tk.line:02}, Col {tk.column:02})')
+fetched_tokens = []
+while True:
   tk = tk_fetcher.next_token()
+  if tk.type is pydician.TokenType.END:
+    break
+  fetched_tokens.append(tk)
+
+for tk in fetched_tokens:
+  print(f'Fecthed: {tk} ({tk.type.name: <10}, Ln {tk.line:02}, Col {tk.column:02})')
 
 # Output
 #
-# Fecthed: 2 (INTEGER, Ln 01, Col 01)
-# Fecthed: d (DIE    , Ln 01, Col 02)
-# Fecthed: 6 (INTEGER, Ln 01, Col 03)
-# Fecthed: + (PLUS   , Ln 01, Col 05)
-# Fecthed: 3 (INTEGER, Ln 01, Col 07)
+# Fecthed: 2 (INTEGER   , Ln 01, Col 01)
+# Fecthed: d (DIE       , Ln 01, Col 02)
+# Fecthed: 6 (INTEGER   , Ln 01, Col 03)
+# Fecthed: + (PLUS      , Ln 01, Col 05)
+# Fecthed: 3 (INTEGER   , Ln 01, Col 07)
 ```
 
 ### 2.4) Syntactic Components
