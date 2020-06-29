@@ -16,28 +16,23 @@ Py-Dician has a grammar: a set of lexic and syntactic rules that all sentences i
 
 The user can quickly process Py-Dician expressions using either the `parse()` or `roll()` free functions.
 
-The `parse()` function takes an expression as a string argument, parses it and returns the resulting operation tree. It may raise an exception if the expression is inconsistent.
+The `parse()` function takes an expression as a string argument, parses it and returns the resulting operation tree. This operation tree may then be executed as many times as needed. It may raise an exception if the expression is inconsistent.
 
 ```Python
 import pydician
 
+# Subtracts the roll of a six-sided die
+# from the roll of another six-sided die.
+# Results range from [-5, 5].
 roll_op = pydician.parse("1d6 - 1d6")
 
-for i in range(10):
-  print(f'{i}: {roll_op.run():+}')
+few_rolls = [roll_op.run() for i in range(10)]
+
+print(", ".join(str(roll) for roll in few_rolls))
 
 # Possible output:
 #
-# 0: +1
-# 1: +0
-# 2: +2
-# 3: -1
-# 4: +5
-# 5: -4
-# 6: +3
-# 7: -3
-# 8: -3
-# 9: +1
+# 1, 0, 2, -1, 5, -4, 3, -3, -3, 1
 ```
 
 The `roll()` function takes an expression as a string argument, parses it and immediately runs it, returning its result. As with `parse()`, it may raise an exception if the expression is inconsistent.
@@ -127,7 +122,7 @@ for i in range(10):
 
 Possible features:
 
-- More complex roll-operations, such as:
+- More complex roll operations, such as:
   - Exploding rolls (may result in rolls higher than the die's maximum):
     - Exploding at a given threshold;
   - Exploding dice (additional dice):
