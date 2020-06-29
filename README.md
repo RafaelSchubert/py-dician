@@ -26,7 +26,7 @@ import pydician
 # Results range from [-5, 5].
 roll_op = pydician.parse("1d6 - 1d6")
 
-few_rolls = [roll_op.run() for i in range(10)]
+few_rolls = [roll_op.run() for _ in range(10)]
 
 print(", ".join(str(roll) for roll in few_rolls))
 
@@ -40,21 +40,16 @@ The `roll()` function takes an expression as a string argument, parses it and im
 ```Python
 import pydician
 
-for i in range(10):
-  print(f'{i}: {pydician.roll("1d12 + 1d8"):+}')
+# Adds the roll of a eight-sided die
+# to the roll of a twelve-sided die.
+# Results range from [2, 20].
+few_rolls = [pydician.roll("1d12 + 1d8") for _ in range(10)]
+
+print(", ".join(str(roll) for roll in few_rolls))
 
 # Possible output:
 #
-# 0: +9
-# 1: +15
-# 2: +13
-# 3: +16
-# 4: +9
-# 5: +6
-# 6: +12
-# 7: +6
-# 8: +16
-# 9: +10
+# 9, 15, 13, 16, 9, 6, 12, 6, 16, 10
 ```
 
 ### 2.3) Lexic Components
