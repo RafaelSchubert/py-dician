@@ -709,7 +709,7 @@ class Parser():
         die_op = self._die_expression()
 
         if value_op is None:
-            return die_op
+            return SingleDieRollOp(die_op)
 
         if die_op is None:
             return value_op
