@@ -136,6 +136,19 @@ class DiceRollOp(BinaryOp):
         return sum(die() for i in range(dice_count))
 
 
+class SingleDieRollOp(DiceRollOp):
+    """Operation that evaluates the roll of a single die.
+
+    Equivalent to ``DiceRollOp(LiteralValueOp(1), DieOp(die_faces_operand))``.
+
+    Parameters:
+        operand (Operation): an operation that produces a die type.
+    """
+
+    def __init__(self, operand: Operation):
+        super().__init__(LiteralValueOp(1), operand)
+
+
 class NegateOp(UnaryOp):
     """Operation that produces the arithmetic-negation of a value.
 
