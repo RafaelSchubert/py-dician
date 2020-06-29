@@ -93,24 +93,27 @@ The syntactic analysis is made by the `Parser` class, which also translates a Py
 ```Python
 import pydician
 
+roll_expr = "2d6 + 3"
 parser = pydician.Parser()
-dice_roll = parser.parse("2d6 + 3")
+
+# Add three to the roll of two six-sided dice.
+dice_roll = parser.parse(roll_expr)
 
 for i in range(10):
-  print(f'{i}th roll: {dice_roll.run()}')
+  print(f'{i}: {roll_expr} = {dice_roll.run()}')
 
 # Possible output:
 #
-# 0th roll: 13
-# 1th roll: 13
-# 2th roll: 9
-# 3th roll: 11
-# 4th roll: 12
-# 5th roll: 7
-# 6th roll: 8
-# 7th roll: 10
-# 8th roll: 13
-# 9th roll: 11
+# 0: 2d6 + 3 = 13
+# 1: 2d6 + 3 = 13
+# 2: 2d6 + 3 = 9
+# 3: 2d6 + 3 = 11
+# 4: 2d6 + 3 = 12
+# 5: 2d6 + 3 = 7
+# 6: 2d6 + 3 = 8
+# 7: 2d6 + 3 = 10
+# 8: 2d6 + 3 = 13
+# 9: 2d6 + 3 = 11
 ```
 
 ## 3) What does the language feature?
