@@ -10,10 +10,24 @@ I thought it would be fun to combine something useful (Python) with something wh
 
 ### 2.1) Dice rolls, of course
 
-You can describe the roll of multiple dice with the `NdF` notation, where `N` is the number of dice, and `F` the maximum value of the die (or number of _faces_, numbered 1 through `F`). For instance, `3d6` means _"roll three six-sided dice"_, `1d10` means _"roll a single ten-sided die"_, and `1d100` means _"roll a single 100-sided die."_ (also known as a percentile die) That same notation is regularly used by tabletop games that require some different dice rolls.
+You can describe the roll of multiple dice with the `NdF` notation, where `N` is the number of dice, and `F` the maximum value of the die. (or number of _faces_, numbered 1 through `F`) You can also ommit the number of dice for a roll of single die.
 
-- Arithmetic operations;
-- Parenthesized expressions;
+For instance, `3d6` means _"roll three six-sided dice"_, `1d10` means _"roll a single ten-sided die"_, and `1d100` means _"roll a single 100-sided die."_ (also known as a percentile die)
+
+That same notation is regularly used by tabletop games that require some different dice rolls, especially RPGs.
+
+### 2.2) Arithmetic operations
+
+You can use any of the four main arithmetic operations (sum, subtraction, multiplication and division) with the results of the dice rolls, mixed with fixed numbers. That lets you apply modifiers to these rolls and/or make basic math with them. Indeed, many tabletop RPG rules require adding modifiers to dice rolls.
+
+The available operations are sum, subtraction, multiplication and division, represented by the symbols `+`, `-`, `*` and `/`, respectively.
+
+For instance, `1d6 + 2` means _"roll a single six-sided die and add two to the result"_, while `5 * 1d10` mean _"roll a single ten-sided die and multiply the result by five."_
+
+The operations follow the same precedence as their mathematic counterparts: operations are solved left to right, multiplications and divisions first, sums and subtractions after. You can change this order by surrounding an expression with parentheses (`( expression )`).
+
+Suppose we need to roll a number ranging from 25 to 50, stepping 5 at a time. (25, 30, 35, 40, 45 and 50) We could do so by rolling a single six-sided die, adding four to the result and multiplying it by five. If we write that literally, we get `1d6 + 4 * 5`, which actually doesn't meet our description. The multiplication would be solved before the sum, resulting in 21, 22, 23, 24, 25 or 26 instead. So we change the operation precedence by enclosing the sum in parentheses: `(1d6 + 4) * 5`.
+
 - Defining the number of dice and die faces through roll expressions (rolls within rolls within rolls...);
 
 ## 3) What is it comprised of?
