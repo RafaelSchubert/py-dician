@@ -2,12 +2,14 @@ import unittest
 import pydician
 
 
-class TestOperations(unittest.TestCase):
+class TestOperation(unittest.TestCase):
     def test_Operation_cannot_be_run(self):
         with self.assertRaises(NotImplementedError):
             pydician.Operation().run()
 
-    def test_LiteralValueOp_returns_unmodified(self):
+
+class TestLiteralValueOp(unittest.TestCase):
+    def test_returns_unmodified(self):
         test_values = [
                 None,
                 True,
@@ -23,9 +25,11 @@ class TestOperations(unittest.TestCase):
         for tv in test_values:
             self.assertEqual(pydician.LiteralValueOp(tv).run(), tv)
 
-    def test_DieOp_returns_callable(self):
+
+class TestDieOp(unittest.TestCase):
+    def test_returns_callable(self):
         self.assertTrue(callable(pydician.DieOp(pydician.LiteralValueOp(6)).run()))
 
-    def test_DieOp_die_returns_int(self):
+    def test_die_returns_int(self):
         die = pydician.DieOp(pydician.LiteralValueOp(6)).run()
         self.assertEqual(type(die()), int)

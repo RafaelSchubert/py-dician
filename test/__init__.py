@@ -1,5 +1,7 @@
-from .test_operations import TestOperations
+from .test_operations import (TestOperation, TestLiteralValueOp, TestDieOp)
 
 __all__ = [
-    'TestOperations'
+    'TestOperation',
+    'TestLiteralValueOp',
+    'TestDieOp'
 ]
