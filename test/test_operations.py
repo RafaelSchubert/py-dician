@@ -38,31 +38,29 @@ class TestSingleDieRollOp(unittest.TestCase):
         self.assertEqual(type(result), int)
 
 
-class TestNegateOp(unittest.TestCase):
+class _TestArithmeticOp(unittest.TestCase):
+    _TEST_VALUES = [0, 1, -1, 0.5, -0.5, 1.5, -1.5]
+
+
+class TestNegateOp(_TestArithmeticOp):
     def test_returns_arithmetic_negate(self):
-        test_values = [0, 1, -1, 0.5,
-                       -0.5, 1.5, -1.5]
-        for tv in test_values:
+        for tv in super()._TEST_VALUES:
             self.assertEqual(pydician.NegateOp(pydician.LiteralValueOp(tv)).run(), -tv)
 
 
-class TestSumOp(unittest.TestCase):
+class TestSumOp(_TestArithmeticOp):
     def test_returns_sum(self):
-        test_values = [0, 1, -1, 0.5,
-                       -0.5, 1.5, -1.5]
-        for ltv in test_values:
-            for rtv in test_values:
+        for ltv in super()._TEST_VALUES:
+            for rtv in super()._TEST_VALUES:
                 self.assertEqual(pydician.SumOp(pydician.LiteralValueOp(ltv),
                                                 pydician.LiteralValueOp(rtv)).run(),
                                  ltv+rtv)
 
 
-class TestSubtractOp(unittest.TestCase):
+class TestSubtractOp(_TestArithmeticOp):
     def test_returns_sum(self):
-        test_values = [0, 1, -1, 0.5,
-                       -0.5, 1.5, -1.5]
-        for ltv in test_values:
-            for rtv in test_values:
+        for ltv in super()._TEST_VALUES:
+            for rtv in super()._TEST_VALUES:
                 self.assertEqual(pydician.SubtractOp(pydician.LiteralValueOp(ltv),
                                                      pydician.LiteralValueOp(rtv)).run(),
                                  ltv-rtv)
