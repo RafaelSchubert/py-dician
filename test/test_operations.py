@@ -48,17 +48,21 @@ class TestNegateOp(unittest.TestCase):
 
 class TestSumOp(unittest.TestCase):
     def test_returns_sum(self):
-        test_values = [
-                0,
-                1,
-                -1,
-                0.5,
-                -0.5,
-                1.5,
-                -1.5
-            ]
+        test_values = [0, 1, -1, 0.5,
+                       -0.5, 1.5, -1.5]
         for ltv in test_values:
             for rtv in test_values:
                 self.assertEqual(pydician.SumOp(pydician.LiteralValueOp(ltv),
                                                 pydician.LiteralValueOp(rtv)).run(),
                                  ltv+rtv)
+
+
+class TestSubtractOp(unittest.TestCase):
+    def test_returns_sum(self):
+        test_values = [0, 1, -1, 0.5,
+                       -0.5, 1.5, -1.5]
+        for ltv in test_values:
+            for rtv in test_values:
+                self.assertEqual(pydician.SubtractOp(pydician.LiteralValueOp(ltv),
+                                                     pydician.LiteralValueOp(rtv)).run(),
+                                 ltv-rtv)
