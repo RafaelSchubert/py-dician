@@ -8,10 +8,24 @@ class TestOperations(unittest.TestCase):
             pydician.Operation().run()
 
     def test_LiteralValueOp_returns_unmodified(self):
-        self.assertEqual(pydician.LiteralValueOp(0).run(), 0)
-        self.assertEqual(pydician.LiteralValueOp(1).run(), 1)
-        self.assertEqual(pydician.LiteralValueOp(-1).run(), -1)
-        self.assertEqual(pydician.LiteralValueOp(0.5).run(), 0.5)
-        self.assertEqual(pydician.LiteralValueOp(-0.5).run(), -0.5)
-        self.assertEqual(pydician.LiteralValueOp('Something').run(), 'Something')
-        self.assertEqual(pydician.LiteralValueOp('Something else').run(), 'Something else')
+        test_values = [
+                None,
+                True,
+                False,
+                0,
+                1,
+                -1,
+                0.5,
+                -0.5,
+                'Something',
+                'Something else'
+            ]
+        for tv in test_values:
+            self.assertEqual(pydician.LiteralValueOp(tv).run(), tv)
+
+    def test_DieOp_returns_callable(self):
+        self.assertTrue(callable(pydician.DieOp(pydician.LiteralValueOp(6)).run()))
+
+    def test_DieOp_die_returns_int(self):
+        die = pydician.DieOp(pydician.LiteralValueOp(6)).run()
+        self.assertEqual(type(die()), int)
