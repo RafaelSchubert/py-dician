@@ -45,3 +45,18 @@ class TestSingleDieRollOp(unittest.TestCase):
     def test_returns_int(self):
         result = pydician.SingleDieRollOp(pydician.DieOp(pydician.LiteralValueOp(6))).run()
         self.assertEqual(type(result), int)
+
+
+class TestNegateOp(unittest.TestCase):
+    def test_returns_arithmetic_negate(self):
+        test_values = [
+                0,
+                1,
+                -1,
+                0.5,
+                -0.5,
+                1.5,
+                -1.5
+            ]
+        for tv in test_values:
+            self.assertEqual(pydician.NegateOp(pydician.LiteralValueOp(tv)).run(), -tv)
