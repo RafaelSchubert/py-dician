@@ -39,3 +39,9 @@ class TestDiceRollOp(unittest.TestCase):
     def test_returns_int(self):
         result = pydician.DiceRollOp(pydician.LiteralValueOp(2), pydician.DieOp(pydician.LiteralValueOp(6))).run()
         self.assertEqual(type(result), int)
+
+
+class TestSingleDieRollOp(unittest.TestCase):
+    def test_returns_int(self):
+        result = pydician.SingleDieRollOp(pydician.DieOp(pydician.LiteralValueOp(6))).run()
+        self.assertEqual(type(result), int)
