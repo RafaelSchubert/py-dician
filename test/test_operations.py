@@ -30,6 +30,12 @@ class TestDieOp(unittest.TestCase):
     def test_returns_callable(self):
         self.assertTrue(callable(pydician.DieOp(pydician.LiteralValueOp(6)).run()))
 
-    def test_die_returns_int(self):
+    def test_die_generates_int(self):
         die = pydician.DieOp(pydician.LiteralValueOp(6)).run()
         self.assertEqual(type(die()), int)
+
+
+class TestDiceRollOp(unittest.TestCase):
+    def test_returns_int(self):
+        result = pydician.DiceRollOp(pydician.LiteralValueOp(2), pydician.DieOp(pydician.LiteralValueOp(6))).run()
+        self.assertEqual(type(result), int)
