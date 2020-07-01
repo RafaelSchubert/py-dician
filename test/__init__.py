@@ -6,7 +6,9 @@ from .test_operations import (
         TestSingleDieRollOp,
         TestNegateOp,
         TestSumOp,
-        TestSubtractOp
+        TestSubtractOp,
+        TestMultiplyOp,
+        TestDivideOp
     )
 
 __all__ = [
@@ -17,5 +19,7 @@ __all__ = [
         'TestSingleDieRollOp',
         'TestNegateOp',
         'TestSumOp',
-        'TestSubtractOp'
+        'TestSubtractOp',
+        'TestMultiplyOp',
+        'TestDivideOp'
     ]

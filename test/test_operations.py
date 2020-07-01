@@ -58,9 +58,31 @@ class TestSumOp(_TestArithmeticOp):
 
 
 class TestSubtractOp(_TestArithmeticOp):
-    def test_returns_sum(self):
+    def test_returns_subtraction(self):
         for ltv in super()._TEST_VALUES:
             for rtv in super()._TEST_VALUES:
                 self.assertEqual(pydician.SubtractOp(pydician.LiteralValueOp(ltv),
                                                      pydician.LiteralValueOp(rtv)).run(),
                                  ltv-rtv)
+
+
+class TestMultiplyOp(_TestArithmeticOp):
+    def test_returns_multiplication(self):
+        for ltv in super()._TEST_VALUES:
+            for rtv in super()._TEST_VALUES:
+                self.assertEqual(pydician.MultiplyOp(pydician.LiteralValueOp(ltv),
+                                                     pydician.LiteralValueOp(rtv)).run(),
+                                 ltv*rtv)
+
+
+class TestDivideOp(_TestArithmeticOp):
+    def test_returns_division(self):
+        for ltv in super()._TEST_VALUES:
+            for rtv in super()._TEST_VALUES:
+                op = pydician.DivideOp(pydician.LiteralValueOp(ltv),
+                                       pydician.LiteralValueOp(rtv))
+                if rtv == 0:
+                    with self.assertRaises(ZeroDivisionError):
+                        op.run()
+                else:
+                    self.assertEqual(op.run(), ltv/rtv)
