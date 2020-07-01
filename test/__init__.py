@@ -4,7 +4,8 @@ from .test_operations import (
         TestDieOp,
         TestDiceRollOp,
         TestSingleDieRollOp,
-        TestNegateOp
+        TestNegateOp,
+        TestSumOp
     )
 
 __all__ = [
@@ -13,5 +14,6 @@ __all__ = [
         'TestDieOp',
         'TestDiceRollOp',
         'TestSingleDieRollOp',
-        'TestNegateOp'
+        'TestNegateOp',
+        'TestSumOp'
     ]

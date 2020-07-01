@@ -10,18 +10,8 @@ class TestOperation(unittest.TestCase):
 
 class TestLiteralValueOp(unittest.TestCase):
     def test_returns_unmodified(self):
-        test_values = [
-                None,
-                True,
-                False,
-                0,
-                1,
-                -1,
-                0.5,
-                -0.5,
-                'Something',
-                'Something else'
-            ]
+        test_values = [None, True, False, 0, 1, -1,
+                       0.5, -0.5, 'Something', 'Something else']
         for tv in test_values:
             self.assertEqual(pydician.LiteralValueOp(tv).run(), tv)
 
@@ -37,7 +27,8 @@ class TestDieOp(unittest.TestCase):
 
 class TestDiceRollOp(unittest.TestCase):
     def test_returns_int(self):
-        result = pydician.DiceRollOp(pydician.LiteralValueOp(2), pydician.DieOp(pydician.LiteralValueOp(6))).run()
+        result = pydician.DiceRollOp(pydician.LiteralValueOp(2),
+                                     pydician.DieOp(pydician.LiteralValueOp(6))).run()
         self.assertEqual(type(result), int)
 
 
@@ -49,6 +40,14 @@ class TestSingleDieRollOp(unittest.TestCase):
 
 class TestNegateOp(unittest.TestCase):
     def test_returns_arithmetic_negate(self):
+        test_values = [0, 1, -1, 0.5,
+                       -0.5, 1.5, -1.5]
+        for tv in test_values:
+            self.assertEqual(pydician.NegateOp(pydician.LiteralValueOp(tv)).run(), -tv)
+
+
+class TestSumOp(unittest.TestCase):
+    def test_returns_sum(self):
         test_values = [
                 0,
                 1,
@@ -58,5 +57,8 @@ class TestNegateOp(unittest.TestCase):
                 1.5,
                 -1.5
             ]
-        for tv in test_values:
-            self.assertEqual(pydician.NegateOp(pydician.LiteralValueOp(tv)).run(), -tv)
+        for ltv in test_values:
+            for rtv in test_values:
+                self.assertEqual(pydician.SumOp(pydician.LiteralValueOp(ltv),
+                                                pydician.LiteralValueOp(rtv)).run(),
+                                 ltv+rtv)
