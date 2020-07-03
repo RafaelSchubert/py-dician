@@ -4,6 +4,7 @@ import pydician
 def main():
     print('Input a Py-Dician roll expression to be parsed ("q" to exit):')
 
+    # We'll store the last successfully parsed expression.
     last_roll_expr = None
 
     while True:
@@ -19,6 +20,7 @@ def main():
             if roll_expr.lower()=='q':
                 break
 
+            # It's in pydician.roll() that the magic happens.
             result = pydician.roll(roll_expr)
             last_roll_expr = roll_expr
 
