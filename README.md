@@ -6,6 +6,10 @@ This one is a little project of mine to practice and get used to working with th
 
 I thought it would be fun to combine something useful (Python) with something which I enjoy (tabletop RPGs). So I decided to make a small, simple dice roll notation language — a _dice-language_ — with a Python interpreter — thus _Py-Dician_. As a bonus, I improve my understanding of interpreters and compilers — which are quite interesting, might I add.
 
+### Samples
+
+Check the available samples at `./samples/` for usage examples.
+
 ## What does Py-Dician feature?
 
 ### Dice rolls, of course
