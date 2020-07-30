@@ -109,6 +109,7 @@ The Py-Dician language is specified by the following set of predicates, starting
 
 <parenthesized_expression> ::= left_parenthesis <math_expression> right_parenthesis
 
-<plus_or_minus>      ::= plus | minus
-<multiply_or_divide> ::= multiply | divide
+<plus_or_minus>       ::= plus | minus
+<multiply_or_divide>  ::= multiply | divide
+<comparison_operator> ::= smaller | greater | equal | smaller_equal | greater_equal | not_equal
 ```
