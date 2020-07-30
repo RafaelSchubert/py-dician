@@ -463,7 +463,8 @@ class Tokenizer():
             if self._expect_symbol_is_any_of(TokenType.SMALLER):
                 if self._expect_symbol_is_any_of(TokenType.EQUAL):
                     return self._fetch_token(TokenType.SMALLER_EQUAL)
-                elif self._expect_symbol_is_any_of(TokenType.GREATER):
+
+                if self._expect_symbol_is_any_of(TokenType.GREATER):
                     return self._fetch_token(TokenType.NOT_EQUAL)
 
                 return self._fetch_token(TokenType.SMALLER)
