@@ -86,7 +86,10 @@ Predicates:
 The Py-Dician language is specified by the following set of predicates, starting at `roll_expression`:
 
 ```
-<roll_expression> ::= <math_expression>
+<roll_expression> ::= <logical_comparison>
+
+<logical_comparison>            ::= <math_expression> <logical_comparison_right_hand>
+<logical_comparison_right_hand> ::= <comparison_operator> <math_expression> <logical_comparison_right_hand> | &
 
 <math_expression> ::= <add_or_subtract>
 
