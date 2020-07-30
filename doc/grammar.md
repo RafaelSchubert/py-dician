@@ -88,10 +88,8 @@ The Py-Dician language is specified by the following set of predicates, starting
 ```
 <roll_expression> ::= <logical_comparison>
 
-<logical_comparison>            ::= <math_expression> <logical_comparison_right_hand>
-<logical_comparison_right_hand> ::= <comparison_operator> <math_expression> <logical_comparison_right_hand> | &
-
-<math_expression> ::= <add_or_subtract>
+<logical_comparison>            ::= <add_or_subtract> <logical_comparison_right_hand>
+<logical_comparison_right_hand> ::= <comparison_operator> <add_or_subtract> <logical_comparison_right_hand> | &
 
 <add_or_subtract>            ::= <multiply_or_divide> <add_or_subtract_right_hand>
 <add_or_subtract_right_hand> ::= <plus_or_minus> <multiply_or_divide> <add_or_subtract_right_hand> | &
@@ -110,7 +108,7 @@ The Py-Dician language is specified by the following set of predicates, starting
 
 <literal> ::= integer
 
-<parenthesized_expression> ::= left_parenthesis <math_expression> right_parenthesis
+<parenthesized_expression> ::= left_parenthesis <roll_expression> right_parenthesis
 
 <plus_or_minus>       ::= plus | minus
 <multiply_or_divide>  ::= multiply | divide
