@@ -8,7 +8,13 @@ from .test_operations import (
         TestSumOp,
         TestSubtractOp,
         TestMultiplyOp,
-        TestDivideOp
+        TestDivideOp,
+        TestSmallerOp,
+        TestGreaterOp,
+        TestEqualOp,
+        TestSmallerOrEqualOp,
+        TestGreaterOrEqualOp,
+        TestNotEqualOp
     )
 
 __all__ = [
@@ -21,5 +27,11 @@ __all__ = [
         'TestSumOp',
         'TestSubtractOp',
         'TestMultiplyOp',
-        'TestDivideOp'
+        'TestDivideOp',
+        'TestSmallerOp',
+        'TestGreaterOp',
+        'TestEqualOp',
+        'TestSmallerOrEqualOp',
+        'TestGreaterOrEqualOp',
+        'TestNotEqualOp'
     ]

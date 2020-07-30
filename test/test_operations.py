@@ -109,3 +109,61 @@ class TestDivideOp(_TestArithmeticOp):
                         op.run()
                 else:
                     self.assertEqual(op.run(), ltv/rtv)
+
+
+class _TestBinaryLogicalComparisonOp(unittest.TestCase):
+    _TEST_VALUES = [-2, -1, 0, 1, 2]
+
+
+class TestSmallerOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_less_than(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.SmallerOp(pydician.LiteralValueOp(lv),
+                                        pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv<rv else 0)
+
+
+class TestGreaterOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_greater_than(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.GreaterOp(pydician.LiteralValueOp(lv),
+                                        pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv>rv else 0)
+
+
+class TestEqualOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_equals_to(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.EqualOp(pydician.LiteralValueOp(lv),
+                                      pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv==rv else 0)
+
+
+class TestSmallerOrEqualOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_less_than_or_equals_to(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.SmallerOrEqualOp(pydician.LiteralValueOp(lv),
+                                               pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv<=rv else 0)
+
+
+class TestGreaterOrEqualOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_greater_than_or_equals_to(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.GreaterOrEqualOp(pydician.LiteralValueOp(lv),
+                                               pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv>=rv else 0)
+
+
+class TestNotEqualOp(_TestBinaryLogicalComparisonOp):
+    def test_returns_not_equals_to(self):
+        for lv in super()._TEST_VALUES:
+            for rv in super()._TEST_VALUES:
+                op = pydician.NotEqualOp(pydician.LiteralValueOp(lv),
+                                         pydician.LiteralValueOp(rv))
+                self.assertEqual(op.run(), 1 if lv!=rv else 0)
