@@ -239,6 +239,36 @@ class DivideOp(BinaryOp):
         return self._left_operand.run() / self._right_operand.run()
 
 
+class SmallerOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() < self._right_operand.run() else 0
+
+
+class GreaterOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() > self._right_operand.run() else 0
+
+
+class EqualOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() == self._right_operand.run() else 0
+
+
+class SmallerOrEqualOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() <= self._right_operand.run() else 0
+
+
+class GreaterOrEqualOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() >= self._right_operand.run() else 0
+
+
+class NotEqualOp(BinaryOp):
+    def run(self) -> int:
+        return 1 if self._left_operand.run() != self._right_operand.run() else 0
+
+
 @unique
 class TokenType(Enum):
     """Constants enumeration for Py-Dician's token types.
