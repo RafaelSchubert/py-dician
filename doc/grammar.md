@@ -11,7 +11,7 @@ The definitions are given in terms of regular expressions.
 
 ### 1.1) Signs
 
-Signs are symbols made up of a single non-alphanumeric character. They represent delimiters and operators, such as mathematical symbols.
+Signs are symbols made up of non-alphanumeric characters. They represent delimiters and operators, such as mathematical symbols.
 
 ```
 left_parenthesis  = (
@@ -20,11 +20,17 @@ plus              = +
 minus             = -
 multiply          = *
 divide            = /
+smaller           = <
+greater           = >
+equal             = =
+smaller_equal     = <=
+greater_equal     = >=
+not_equal         = <>
 ```
 
 ### 1.2) Keywords
 
-Keywords are symbols made up of one or more alphanumeric characters — that is, _words_. They represent more complex operations and constructs or concepts. These words are reserved for use of the language.
+Keywords are symbols made up of alphanumeric characters — that is, _words_. They represent more complex operations and constructs or concepts. These words are reserved for use of the language.
 
 ```
 die_tag = [dD]
