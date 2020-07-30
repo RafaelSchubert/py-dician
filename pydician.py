@@ -239,34 +239,42 @@ class DivideOp(BinaryOp):
         return self._left_operand.run() / self._right_operand.run()
 
 
-class SmallerOp(BinaryOp):
+class BinaryLogicalComparisonOp(BinaryOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        raise NotImplementedError
+
     def run(self) -> int:
-        return 1 if self._left_operand.run() < self._right_operand.run() else 0
+        return 1 if self._compare(self._left_operand.run(), self._right_operand.run()) else 0
 
 
-class GreaterOp(BinaryOp):
-    def run(self) -> int:
-        return 1 if self._left_operand.run() > self._right_operand.run() else 0
+class SmallerOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value < right_value
 
 
-class EqualOp(BinaryOp):
-    def run(self) -> int:
-        return 1 if self._left_operand.run() == self._right_operand.run() else 0
+class GreaterOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value > right_value
 
 
-class SmallerOrEqualOp(BinaryOp):
-    def run(self) -> int:
-        return 1 if self._left_operand.run() <= self._right_operand.run() else 0
+class EqualOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value == right_value
 
 
-class GreaterOrEqualOp(BinaryOp):
-    def run(self) -> int:
-        return 1 if self._left_operand.run() >= self._right_operand.run() else 0
+class SmallerOrEqualOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value <= right_value
 
 
-class NotEqualOp(BinaryOp):
-    def run(self) -> int:
-        return 1 if self._left_operand.run() != self._right_operand.run() else 0
+class GreaterOrEqualOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value >= right_value
+
+
+class NotEqualOp(BinaryLogicalComparisonOp):
+    def _compare(self, left_value: Any, right_value: Any) -> bool:
+        return left_value != right_value
 
 
 @unique
