@@ -32,6 +32,20 @@ The operations follow the same precedence as their mathematic counterparts: oper
 
 Suppose we need to roll a number ranging from 25 to 50, stepping 5 at a time. (25, 30, 35, 40, 45 and 50) We could do so by rolling a single six-sided die, adding four to the result and multiplying it by five. If we write that literally, we get `1d6 + 4 * 5`, which actually doesn't meet our description. The multiplication would be solved before the sum, resulting in 21, 22, 23, 24, 25 or 26 instead. So we change the operation precedence by enclosing the sum in parentheses: `(1d6 + 4) * 5`.
 
+### Logical comparisons
+
+You can compare two values to determine whether one is less than the other, or both are equal or different. The comparison yields `1` if true, or `0` if false. The compared values can be any combination of values and expressions, as long as they're comparable.
+
+The available operations are:
+- smaller than (`a < b`);
+- greater than (`a > b`);
+- equals to (`a = b`);
+- smaller than or equal to (`a <= b`);
+- greater than or equal to (`a >= b`);
+- not equal to (`a <> b`);
+
+The logical comparison operators have a higher precedence than any of the arithmetical operations. For instance, `1 + 1 = 2` means _"is `1 + 1` equals to `2`?"_, and is executed as `(1 + 1) = 2`. On the other hand, `2 < 3 + 1 = 0` is executed as `(2 < (3 + 1)) = 0`.
+
 ## What is Py-Dician comprised of?
 
 ### Grammar
