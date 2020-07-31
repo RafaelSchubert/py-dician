@@ -674,7 +674,46 @@ class Parser():
     def _roll_expression(self) -> Operation:
         # Tries to parse a roll expression, starting at the current token.
 
-        return self._addition_or_subtraction()
+        return self._logical_comparison()
+
+    def _logical_comparison(self) -> Operation:
+        left_operand = self._addition_or_subtraction()
+
+        if left_operand is None:
+            return None
+
+        return self._logical_comparison_right_hand(left_operand)
+
+    def _logical_comparison_right_hand(self, left_operand: Operation) -> Operation:
+        op_token_type = self._current_token.type
+
+        if op_token_type not in (TokenType.SMALLER, TokenType.GREATER, TokenType.EQUAL,
+                                 TokenType.SMALLER_EQUAL, TokenType.GREATER_EQUAL, TokenType.NOT_EQUAL):
+            return left_operand
+
+        self._next_token()
+
+        right_operand = self._addition_or_subtraction()
+
+        if right_operand is None:
+            self._handle_unexpected_token()
+
+        operation = None
+
+        if op_token_type is TokenType.SMALLER:
+            operation = SmallerOp(left_operand, right_operand)
+        elif op_token_type is TokenType.GREATER:
+            operation = GreaterOp(left_operand, right_operand)
+        elif op_token_type is TokenType.EQUAL:
+            operation = EqualOp(left_operand, right_operand)
+        elif op_token_type is TokenType.SMALLER_EQUAL:
+            operation = SmallerOrEqualOp(left_operand, right_operand)
+        elif op_token_type is TokenType.GREATER_EQUAL:
+            operation = GreaterOrEqualOp(left_operand, right_operand)
+        else:
+            operation = NotEqualOp(left_operand, right_operand)
+
+        return self._logical_comparison_right_hand(operation)
 
     def _addition_or_subtraction(self) -> Operation:
         # Tries to parse an addition or a subtraction, starting at the current token.
